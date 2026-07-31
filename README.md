@@ -267,6 +267,7 @@ Created and maintained with ❤️ by **[Maximiliano Contartesi](https://github.
 
 - 💼 **LinkedIn**: [maxiconta](https://www.linkedin.com/in/maxiconta/)
 - 🐙 **GitHub**: [@mcontartesi](https://github.com/mcontartesi)
+- ✉️ **Email / Contact**: `maxiconta [at] gmail [dot] com`
 - 📝 **Medium**: [@maxiconta](https://medium.com/@maxiconta)
 - 📄 **Story**: Read [How a Silent Cron Job Ruined My Weekend](https://medium.com/@maxiconta/how-a-silent-cron-job-ruined-my-weekend-and-why-i-built-a-0-open-source-alternative-on-a57173e25db3)
 
