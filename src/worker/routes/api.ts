@@ -249,12 +249,15 @@ apiRouter.post('/monitors/:id/ping', async (c) => {
   const monitor = await db.getMonitorBySlugOrId(id);
   if (!monitor) return c.json({ error: 'Monitor not found' }, 404);
 
-  const { monitor: updatedMonitor } = await db.recordPing(monitor, 'success', {
-    user_agent: 'Health Monitor Web Dashboard Test Ping',
-    duration_ms: 42,
+  const ip = c.req.header('cf-connecting-ip') || c.req.header('x-forwarded-for') || '127.0.0.1 (Dashboard)';
+  const { monitor: updatedMonitor, logId } = await db.recordPing(monitor, 'success', {
+    remote_addr: ip,
+    user_agent: 'Manual Test Ping (Web Dashboard)',
+    duration_ms: Math.floor(Math.random() * 20) + 15,
+    body_snippet: 'Manual test triggered from dashboard UI',
   });
 
-  return c.json({ success: true, monitor: updatedMonitor });
+  return c.json({ success: true, monitor: updatedMonitor, logId });
 });
 
 apiRouter.delete('/monitors/:id', async (c) => {

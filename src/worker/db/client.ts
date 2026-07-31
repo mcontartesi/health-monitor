@@ -252,11 +252,14 @@ export class DBClient {
     return { monitor: updatedMonitor, logId };
   }
 
-  async getPingLogs(monitorId: string, limit = 50): Promise<PingLog[]> {
+  async getPingLogs(monitorIdOrSlug: string, limit = 50): Promise<PingLog[]> {
+    const monitor = await this.getMonitorBySlugOrId(monitorIdOrSlug);
+    const targetId = monitor ? monitor.id : monitorIdOrSlug;
+
     const { results } = await this.env.DB.prepare(
       `SELECT * FROM ping_logs WHERE monitor_id = ? ORDER BY created_at DESC LIMIT ?`
-    ).bind(monitorId, limit).all<PingLog>();
-    return results;
+    ).bind(targetId, limit).all<PingLog>();
+    return results || [];
   }
 
   // Channels

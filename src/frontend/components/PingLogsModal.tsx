@@ -21,7 +21,12 @@ export const PingLogsModal: React.FC<PingLogsModalProps> = ({ monitor, onClose }
     if (!monitor) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/monitors/${monitor.id}/logs`);
+      const token = localStorage.getItem('health_monitor_token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const res = await fetch(`/api/monitors/${monitor.id}/logs`, { headers });
       const data = await res.json();
       setLogs(data.logs || []);
     } catch (e) {
