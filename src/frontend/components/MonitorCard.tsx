@@ -6,6 +6,7 @@ import { Monitor } from '../../worker/db/types';
 
 interface MonitorCardProps {
   monitor: Monitor;
+  isHighlighted?: boolean;
   onOpenSnippets: (m: Monitor) => void;
   onOpenLogs: (m: Monitor) => void;
   onTestPing: (m: Monitor) => void;
@@ -15,6 +16,7 @@ interface MonitorCardProps {
 
 export const MonitorCard: React.FC<MonitorCardProps> = ({
   monitor,
+  isHighlighted = false,
   onOpenSnippets,
   onOpenLogs,
   onTestPing,
@@ -76,7 +78,13 @@ export const MonitorCard: React.FC<MonitorCardProps> = ({
   };
 
   return (
-    <div className="glass-panel glass-panel-hover rounded-2xl p-5 border border-slate-800/80 transition duration-200 group">
+    <div
+      className={`glass-panel glass-panel-hover rounded-2xl p-5 border transition-all duration-300 group ${
+        isHighlighted
+          ? 'border-emerald-500/80 ring-2 ring-emerald-500/60 shadow-[0_0_30px_rgba(16,185,129,0.35)] bg-emerald-950/20 scale-[1.008]'
+          : 'border-slate-800/80'
+      }`}
+    >
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         
         {/* Left Info Section */}
@@ -87,6 +95,12 @@ export const MonitorCard: React.FC<MonitorCardProps> = ({
               <StatusIcon className="w-3.5 h-3.5" />
               <span>{status.label}</span>
             </span>
+
+            {isHighlighted && (
+              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-bounce shadow-md">
+                <span>PING RECEIVED</span>
+              </span>
+            )}
 
             <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition duration-200 tracking-tight">
               {monitor.name}

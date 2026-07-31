@@ -13,6 +13,8 @@ import { Footer } from './components/Footer';
 import { Search, ShieldAlert, Plus, RefreshCw, Cpu, Database, Lock } from 'lucide-react';
 import { Monitor } from '../worker/db/types';
 
+import { useWebSocket, RealtimeEvent } from './hooks/useWebSocket';
+
 export default function App() {
   const [monitors, setMonitors] = useState<Monitor[]>([]);
   const [stats, setStats] = useState({ total: 0, up: 0, grace: 0, down: 0, paused: 0 });
@@ -32,12 +34,44 @@ export default function App() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [selectedSnippetMonitor, setSelectedSnippetMonitor] = useState<Monitor | null>(null);
   const [selectedLogsMonitor, setSelectedLogsMonitor] = useState<Monitor | null>(null);
+  const [highlightedMonitors, setHighlightedMonitors] = useState<Record<string, boolean>>({});
+
+  // Handle real-time WebSocket events
+  const handleRealtimeEvent = React.useCallback((event: RealtimeEvent) => {
+    console.log('[Realtime WS Event]:', event.type, event.payload);
+    const targetId = event.payload?.monitor?.id || event.payload?.monitorId;
+    if (targetId) {
+      setHighlightedMonitors((prev) => ({
+        ...prev,
+        [targetId]: true,
+      }));
+
+      setTimeout(() => {
+        setHighlightedMonitors((prev) => {
+          const next = { ...prev };
+          delete next[targetId];
+          return next;
+        });
+      }, 2500);
+    }
+
+    if (
+      event.type === 'PING_RECEIVED' ||
+      event.type === 'MONITOR_UPDATED' ||
+      event.type === 'MONITOR_CREATED' ||
+      event.type === 'MONITOR_DELETED'
+    ) {
+      fetchMonitors(true);
+    }
+  }, []);
+
+  const { status: wsStatus } = useWebSocket(handleRealtimeEvent);
 
   useEffect(() => {
     fetchMonitors();
     fetchUserInfo();
-    // Auto-refresh every 30s
-    const timer = setInterval(() => fetchMonitors(true), 30000);
+    // Auto-refresh fallback every 60s
+    const timer = setInterval(() => fetchMonitors(true), 60000);
     return () => clearInterval(timer);
   }, [projectId]);
 
@@ -53,7 +87,7 @@ export default function App() {
     const res = await fetch(url, { ...options, headers });
     if (res.status === 401) {
       const cloned = res.clone();
-      const data = await cloned.json().catch(() => ({}));
+      const data: any = await cloned.json().catch(() => ({}));
       if (data.needSetup) {
         setNeedSetup(true);
         setIsSetupWizardOpen(true);
@@ -68,7 +102,7 @@ export default function App() {
   const fetchUserInfo = async () => {
     try {
       const res = await authFetch('/api/user');
-      const data = await res.json();
+      const data: any = await res.json();
       if (data.authenticated) {
         setUserInfo(data);
       }
@@ -82,7 +116,7 @@ export default function App() {
     setIsRefreshing(true);
     try {
       const res = await authFetch(`/api/monitors?project_id=${projectId}`);
-      const data = await res.json();
+      const data: any = await res.json();
 
       if (data.needSetup) {
         setNeedSetup(true);
@@ -153,6 +187,7 @@ export default function App() {
         onLogout={handleLogout}
         isRefreshing={isRefreshing}
         userInfo={userInfo}
+        wsStatus={wsStatus}
       />
 
       {/* Main Content Area */}
@@ -180,7 +215,7 @@ export default function App() {
 
           <div className="flex items-center space-x-2 text-xs text-slate-400 bg-slate-900/50 px-3 py-1.5 rounded-xl border border-slate-800/60">
             <Cpu className="w-4 h-4 text-emerald-400 animate-pulse" />
-            <span>Evaluating health every 60s via Cloudflare Cron Trigger</span>
+            <span>Realtime WebSocket Updates Active • Evaluated every 60s via Cron</span>
           </div>
         </div>
 
@@ -231,6 +266,7 @@ export default function App() {
               <MonitorCard
                 key={monitor.id}
                 monitor={monitor}
+                isHighlighted={!!highlightedMonitors[monitor.id]}
                 onOpenSnippets={(m) => setSelectedSnippetMonitor(m)}
                 onOpenLogs={(m) => setSelectedLogsMonitor(m)}
                 onTestPing={handleTestPing}

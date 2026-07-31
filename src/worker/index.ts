@@ -25,6 +25,8 @@ app.all('*', async (c) => {
   return c.text('Health Monitor Backend API - Static UI assets binding not loaded.', 404);
 });
 
+export { RealtimeBroadcaster } from './services/broadcaster';
+
 export default {
   // HTTP fetch handler
   fetch: app.fetch,

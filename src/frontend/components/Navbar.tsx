@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Activity, Plus, Bell, RefreshCw, Cloud, Settings, ExternalLink, ShieldCheck, User, LogOut, ChevronDown } from 'lucide-react';
 
+import { WebSocketStatus } from '../hooks/useWebSocket';
+
 interface NavbarProps {
   onOpenAddMonitor: () => void;
   onOpenChannels: () => void;
@@ -9,6 +11,7 @@ interface NavbarProps {
   onLogout: () => void;
   isRefreshing: boolean;
   userInfo?: { authenticated: boolean; email?: string; provider?: string };
+  wsStatus?: WebSocketStatus;
 }
 
 const GithubIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
@@ -25,6 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout,
   isRefreshing,
   userInfo,
+  wsStatus = 'disconnected',
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -56,9 +60,33 @@ export const Navbar: React.FC<NavbarProps> = ({
               <h1 className="text-lg font-bold text-white tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
                 Health Monitor
               </h1>
-              <span className="hidden sm:inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm">
-                <Cloud className="w-3 h-3" />
-                <span>Cloudflare Native</span>
+
+              {/* Real-time Connection Status Badge */}
+              <span
+                className={`inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border shadow-sm transition duration-300 ${
+                  wsStatus === 'connected'
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                    : wsStatus === 'connecting'
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse'
+                    : 'bg-slate-800/80 text-slate-400 border-slate-700/60'
+                }`}
+                title={`Real-time WebSocket: ${wsStatus}`}
+              >
+                <span className="relative flex h-2 w-2">
+                  {wsStatus === 'connected' && (
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  )}
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                    wsStatus === 'connected'
+                      ? 'bg-emerald-400'
+                      : wsStatus === 'connecting'
+                      ? 'bg-amber-400'
+                      : 'bg-slate-500'
+                  }`} />
+                </span>
+                <span className="font-semibold">
+                  {wsStatus === 'connected' ? 'Connected' : wsStatus === 'connecting' ? 'Connecting...' : 'Offline'}
+                </span>
               </span>
             </div>
             <p className="text-[11px] text-slate-400 font-normal hidden sm:block">Serverless Cron Job & Uptime Switch</p>

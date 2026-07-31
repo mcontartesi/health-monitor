@@ -1,6 +1,7 @@
 export interface Env {
   DB: D1Database;
   KV: KVNamespace;
+  REALTIME_BROADCASTER?: DurableObjectNamespace;
   ASSETS?: Fetcher;
   ADMIN_USERNAME?: string;
   ADMIN_PASSWORD?: string;
