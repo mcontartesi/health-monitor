@@ -5,7 +5,6 @@
 
 ---
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/mcontartesi/health-monitor)
 ![Health Monitor Status](https://img.shields.io/badge/Health_Monitor-Cloudflare_Native-10b981?style=for-the-badge&logo=cloudflare)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?style=for-the-badge&logo=typescript)
