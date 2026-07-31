@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Plus, Bell, RefreshCw, Cloud, Database, ExternalLink } from 'lucide-react';
+import { Activity, Plus, Bell, RefreshCw, Cloud, Database, ExternalLink, ShieldCheck, User } from 'lucide-react';
 
 interface NavbarProps {
   onOpenAddMonitor: () => void;
@@ -7,6 +7,7 @@ interface NavbarProps {
   onOpenSetupWizard: () => void;
   onRefresh: () => void;
   isRefreshing: boolean;
+  userInfo?: { authenticated: boolean; email?: string };
 }
 
 const GithubIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
@@ -21,6 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSetupWizard,
   onRefresh,
   isRefreshing,
+  userInfo,
 }) => {
   return (
     <header className="sticky top-0 z-40 glass-panel border-b border-slate-800 px-6 py-3.5 mb-8">
@@ -44,6 +46,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Buttons */}
         <div className="flex items-center space-x-2">
+          {/* Cloudflare Access Identity Badge */}
+          {userInfo?.authenticated && userInfo.email ? (
+            <div className="hidden lg:flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="max-w-[150px] truncate">{userInfo.email}</span>
+            </div>
+          ) : null}
+
           {/* Cloudflare Deploy Button */}
           <a
             href="https://deploy.workers.cloudflare.com/?url=https://github.com/mcontartesi/health-monitor"

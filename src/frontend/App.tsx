@@ -20,6 +20,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [needSetup, setNeedSetup] = useState(false);
+  const [userInfo, setUserInfo] = useState<{ authenticated: boolean; email?: string }>({ authenticated: false });
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -30,10 +31,23 @@ export default function App() {
 
   useEffect(() => {
     fetchMonitors();
+    fetchUserInfo();
     // Auto-refresh every 30s
     const timer = setInterval(() => fetchMonitors(true), 30000);
     return () => clearInterval(timer);
   }, [projectId]);
+
+  const fetchUserInfo = async () => {
+    try {
+      const res = await fetch('/api/user');
+      const data = await res.json();
+      if (data.authenticated) {
+        setUserInfo(data);
+      }
+    } catch (err) {
+      console.log('Zero Trust Auth check:', err);
+    }
+  };
 
   const fetchMonitors = async (silent = false) => {
     if (!silent) setIsLoading(true);
@@ -103,6 +117,7 @@ export default function App() {
         onOpenSetupWizard={() => setIsSetupWizardOpen(true)}
         onRefresh={() => fetchMonitors()}
         isRefreshing={isRefreshing}
+        userInfo={userInfo}
       />
 
       {/* Main Content Area */}

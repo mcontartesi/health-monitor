@@ -9,6 +9,26 @@ export const apiRouter = new Hono<{ Bindings: Env }>();
 
 apiRouter.route('/setup', setupRouter);
 
+// Auth / User Identity (Supports Cloudflare Access / Zero Trust out-of-the-box)
+apiRouter.get('/user', (c) => {
+  const email = c.req.header('Cf-Access-Authenticated-User-Email');
+  const country = c.req.header('Cf-Ipcountry');
+
+  if (email) {
+    return c.json({
+      authenticated: true,
+      provider: 'Cloudflare Access (Zero Trust)',
+      email,
+      country: country || 'Global',
+    });
+  }
+
+  return c.json({
+    authenticated: false,
+    provider: 'Direct Access',
+  });
+});
+
 // Projects
 apiRouter.get('/projects', async (c) => {
   const db = new DBClient(c.env);

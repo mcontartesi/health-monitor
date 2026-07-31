@@ -156,6 +156,21 @@ Embed real-time status badges into your project READMEs:
 
 ---
 
+## 🔐 Zero Trust & Cloudflare Access Authentication
+
+Health Monitor supports **Cloudflare Access (Cloudflare One)** out-of-the-box for Zero Trust authentication **without breaking 1-Click Deployment simplicity**:
+
+1. **Zero Code Overhead**: Deploy normally with 1-Click or Wrangler CLI.
+2. **Protect Dashboard via Cloudflare One**:
+   - Go to [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com) → **Access** → **Applications**.
+   - Click **Add an Application** → **Self-hosted**.
+   - Point to your Worker URL (`health-monitor.your-subdomain.workers.dev`).
+   - Configure Single Sign-On (GitHub, Google, Azure AD, Okta, or Email OTP).
+   - Exclude `/ping/*` and `/badge/*` routes from Access policies so external cron scripts can ping without credentials.
+3. **Automatic User Identity**: Health Monitor detects authenticated user sessions (`Cf-Access-Authenticated-User-Email`) and displays an active Zero Trust identity badge in the UI header.
+
+---
+
 ## 🧱 Architecture Overview
 
 ```
