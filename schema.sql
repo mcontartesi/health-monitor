@@ -75,6 +75,13 @@ CREATE TABLE IF NOT EXISTS api_keys (
   FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 
+-- 7. App System Configuration & Credentials
+CREATE TABLE IF NOT EXISTS app_config (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_monitors_project ON monitors(project_id);
 CREATE INDEX IF NOT EXISTS idx_monitors_slug ON monitors(slug);

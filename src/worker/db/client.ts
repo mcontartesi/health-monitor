@@ -18,7 +18,12 @@ export class DBClient {
     }
   }
 
-  async initializeSchema(withSampleData: boolean = true): Promise<{ success: boolean; executedCount: number }> {
+  async initializeSchema(options: {
+    username?: string;
+    password?: string;
+    withSampleData?: boolean;
+  } = {}): Promise<{ success: boolean; executedCount: number }> {
+    const withSampleData = options.withSampleData !== false;
     const stmts = [
       `CREATE TABLE IF NOT EXISTS projects (id TEXT PRIMARY KEY, name TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP);`,
       `CREATE TABLE IF NOT EXISTS monitors (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, name TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, description TEXT, schedule_type TEXT NOT NULL DEFAULT 'simple', interval_seconds INTEGER DEFAULT 3600, cron_expression TEXT, cron_tz TEXT DEFAULT 'UTC', grace_seconds INTEGER DEFAULT 900, status TEXT NOT NULL DEFAULT 'new', last_ping_at DATETIME, next_ping_expected_at DATETIME, last_duration_ms INTEGER, last_exit_code INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE);`,
@@ -26,12 +31,20 @@ export class DBClient {
       `CREATE TABLE IF NOT EXISTS channels (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, name TEXT NOT NULL, type TEXT NOT NULL, config_json TEXT NOT NULL, enabled INTEGER DEFAULT 1, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE);`,
       `CREATE TABLE IF NOT EXISTS monitor_channels (monitor_id TEXT NOT NULL, channel_id TEXT NOT NULL, PRIMARY KEY (monitor_id, channel_id), FOREIGN KEY (monitor_id) REFERENCES monitors(id) ON DELETE CASCADE, FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE);`,
       `CREATE TABLE IF NOT EXISTS api_keys (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, name TEXT NOT NULL, key_prefix TEXT NOT NULL, secret_hash TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE);`,
+      `CREATE TABLE IF NOT EXISTS app_config (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP);`,
       `CREATE INDEX IF NOT EXISTS idx_monitors_project ON monitors(project_id);`,
       `CREATE INDEX IF NOT EXISTS idx_monitors_slug ON monitors(slug);`,
       `CREATE INDEX IF NOT EXISTS idx_monitors_status ON monitors(status);`,
       `CREATE INDEX IF NOT EXISTS idx_ping_logs_monitor ON ping_logs(monitor_id, created_at DESC);`,
       `INSERT OR IGNORE INTO projects (id, name) VALUES ('proj_default', 'Production Environment');`
     ];
+
+    if (options.username) {
+      stmts.push(`INSERT OR REPLACE INTO app_config (key, value) VALUES ('admin_username', '${options.username.replace(/'/g, "''")}');`);
+    }
+    if (options.password) {
+      stmts.push(`INSERT OR REPLACE INTO app_config (key, value) VALUES ('admin_password', '${options.password.replace(/'/g, "''")}');`);
+    }
 
     if (withSampleData) {
       stmts.push(
@@ -42,6 +55,17 @@ export class DBClient {
     const batchPrepares = stmts.map((s) => this.env.DB.prepare(s));
     await this.env.DB.batch(batchPrepares);
     return { success: true, executedCount: stmts.length };
+  }
+
+  async getAppConfig(key: string): Promise<string | null> {
+    try {
+      const res = await this.env.DB.prepare(
+        `SELECT value FROM app_config WHERE key = ?`
+      ).bind(key).first<{ value: string }>();
+      return res ? res.value : null;
+    } catch (err) {
+      return null;
+    }
   }
 
   // Projects

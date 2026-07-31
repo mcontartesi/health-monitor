@@ -14,7 +14,25 @@ function generateAdminToken(username: string, pass: string): string {
   return btoa(`${username}:${pass}:health_monitor_salt_2026`);
 }
 
-function isValidAuth(c: any): boolean {
+async function getEffectiveAdminCredentials(c: any): Promise<{ username: string; pass: string }> {
+  const envUser = c.env.ADMIN_USERNAME;
+  const envPass = c.env.ADMIN_PASSWORD;
+
+  if (envPass) {
+    return { username: envUser || 'admin', pass: envPass };
+  }
+
+  const db = new DBClient(c.env);
+  const dbUser = await db.getAppConfig('admin_username');
+  const dbPass = await db.getAppConfig('admin_password');
+
+  return {
+    username: envUser || dbUser || 'admin',
+    pass: envPass || dbPass || 'admin',
+  };
+}
+
+async function isValidAuth(c: any): Promise<boolean> {
   // 1. Pass if Cloudflare Access header is present
   const cfAccessEmail = c.req.header('Cf-Access-Authenticated-User-Email');
   if (cfAccessEmail) return true;
@@ -23,9 +41,8 @@ function isValidAuth(c: any): boolean {
   const authHeader = c.req.header('Authorization');
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
-    const expectedUser = c.env.ADMIN_USERNAME || 'admin';
-    const expectedPass = c.env.ADMIN_PASSWORD || 'admin';
-    const expectedToken = generateAdminToken(expectedUser, expectedPass);
+    const creds = await getEffectiveAdminCredentials(c);
+    const expectedToken = generateAdminToken(creds.username, creds.pass);
     if (token === expectedToken) return true;
   }
 
@@ -33,10 +50,9 @@ function isValidAuth(c: any): boolean {
 }
 
 // Public Auth Endpoints
-apiRouter.get('/user', (c) => {
+apiRouter.get('/user', async (c) => {
   const email = c.req.header('Cf-Access-Authenticated-User-Email');
   const country = c.req.header('Cf-Ipcountry');
-  const authHeader = c.req.header('Authorization');
 
   if (email) {
     return c.json({
@@ -47,11 +63,13 @@ apiRouter.get('/user', (c) => {
     });
   }
 
-  if (isValidAuth(c)) {
+  const authenticated = await isValidAuth(c);
+  if (authenticated) {
+    const creds = await getEffectiveAdminCredentials(c);
     return c.json({
       authenticated: true,
       provider: 'Admin Password',
-      email: `${c.env.ADMIN_USERNAME || 'admin'}@local`,
+      email: `${creds.username}@local`,
       country: country || 'Local',
     });
   }
@@ -68,15 +86,14 @@ apiRouter.post('/auth/login', async (c) => {
     const username = (body.username || '').trim();
     const password = (body.password || '').trim();
 
-    const expectedUser = c.env.ADMIN_USERNAME || 'admin';
-    const expectedPass = c.env.ADMIN_PASSWORD || 'admin';
+    const creds = await getEffectiveAdminCredentials(c);
 
-    if (username === expectedUser && password === expectedPass) {
-      const token = generateAdminToken(expectedUser, expectedPass);
+    if (username === creds.username && password === creds.pass) {
+      const token = generateAdminToken(creds.username, creds.pass);
       return c.json({
         success: true,
         token,
-        username: expectedUser,
+        username: creds.username,
       });
     }
 
@@ -94,7 +111,8 @@ apiRouter.use('*', async (c, next) => {
     return await next();
   }
 
-  if (!isValidAuth(c)) {
+  const authenticated = await isValidAuth(c);
+  if (!authenticated) {
     return c.json(
       {
         error: 'Admin authentication required',

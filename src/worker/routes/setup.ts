@@ -15,20 +15,30 @@ setupRouter.get('/status', async (c) => {
   });
 });
 
-// POST /api/setup/init - Initializes database schema and tables
+// POST /api/setup/init - Initializes database schema, tables, and admin credentials
 setupRouter.post('/init', async (c) => {
   try {
     const body = await c.req.json().catch(() => ({}));
-    const withSampleData = body.withSampleData !== false; // defaults to true
+    const withSampleData = body.withSampleData !== false;
+    const username = (body.username || 'admin').trim();
+    const password = (body.password || 'admin').trim();
 
     const db = new DBClient(c.env);
-    const result = await db.initializeSchema(withSampleData);
+    const result = await db.initializeSchema({
+      username,
+      password,
+      withSampleData,
+    });
+
+    const token = btoa(`${username}:${password}:health_monitor_salt_2026`);
 
     return c.json({
       success: true,
-      message: 'Cloudflare D1 database schema initialized successfully!',
+      message: 'Cloudflare D1 database schema and admin credentials initialized successfully!',
       executedCount: result.executedCount,
       withSampleData,
+      token,
+      username,
     });
   } catch (err: any) {
     console.error('Setup initialization failed:', err);
