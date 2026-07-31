@@ -34,6 +34,7 @@ Traditional cron monitoring services require running background worker servers, 
 **Health Monitor** re-imagines cron heartbeat monitoring from the ground up for the modern Edge ecosystem:
 
 - ⚡ **Zero External Infrastructure**: No VPS, Docker containers, Kubernetes pods, or external databases needed. 100% serverless!
+- ⚡ **Native Real-Time WebSockets**: Powered by **Cloudflare Durable Objects** with *WebSocket Hibernation* for instant live status updates & glowing border visual flashes without polling!
 - 🛡️ **Edge Performance**: Ping ingestion responds in `< 20ms` globally via Cloudflare's 300+ edge locations.
 - 🕒 **Cloudflare Cron Triggers**: Background check heartbeat evaluator runs automatically every minute using Cloudflare Workers `scheduled` triggers.
 - 📊 **D1 Relational Storage**: Serverless SQLite database at the edge storing monitors, audit logs, and alert configurations.
@@ -106,6 +107,20 @@ Pass execution exit codes directly:
 ```bash
 curl -m 10 https://your-worker.workers.dev/ping/db-backup/$?
 ```
+
+---
+
+## ⚡ Native Real-Time WebSockets & Live Dashboard Highlights
+
+Health Monitor features **native, zero-polling real-time updates** powered by **Cloudflare Durable Objects** with *WebSocket Hibernation*:
+
+- 🔌 **Endpoint**: `/api/ws` (WebSocket connection for browser dashboard).
+- 🛰️ **Durable Object Hub (`RealtimeBroadcaster`)**: Manages stateful client connections at the Cloudflare edge without memory leaks or high compute cost.
+- 💥 **Instant Live Highlights**: When an incoming HTTP ping (`/ping/:slug`) or state evaluation transition (`UP` → `GRACE` → `DOWN`) occurs:
+  - The backend broadcasts a `PING_RECEIVED` or `MONITOR_UPDATED` event to all connected dashboard WebSockets.
+  - The dashboard updates the monitor card status **instantly** in under 10ms.
+  - The corresponding monitor card flashes with a **glowing emerald border shadow** (`border-emerald-500/80 shadow-[0_0_30px_rgba(16,185,129,0.35)]`) and displays a **`PING RECEIVED`** animated pulse badge for 2.5 seconds.
+- 🔄 **Auto-Reconnect**: The React frontend hook (`useWebSocket`) automatically reconnects with exponential backoff on network interruptions and maintains keep-alive ping/pong heartbeats.
 
 ---
 

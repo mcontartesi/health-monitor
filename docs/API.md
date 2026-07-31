@@ -208,3 +208,47 @@ Returns recent ping log records for a monitor.
 `POST /api/monitors/:id/ping`
 
 Manually simulates a ping for testing.
+
+---
+
+## 5. Real-Time WebSocket API
+
+### Connect to WebSocket Feed
+`GET /api/ws` (HTTP Upgrade request)
+
+Establishes a persistent, stateful WebSocket stream managed by Cloudflare Durable Objects.
+
+- **URL Protocol**: `ws://` (HTTP) or `wss://` (HTTPS)
+- **Authentication**: Unauthenticated for UI streaming; excluded from Bearer token locks.
+
+#### Event Schema:
+```json
+{
+  "type": "PING_RECEIVED",
+  "payload": {
+    "monitor": {
+      "id": "chk_123",
+      "name": "API Gateway",
+      "slug": "api-gateway",
+      "status": "up",
+      "last_ping_at": "2026-07-31T01:00:00.000Z"
+    },
+    "logId": "log_456"
+  },
+  "timestamp": "2026-07-31T01:00:00.000Z"
+}
+```
+
+#### Event Types:
+
+| Event Type | Trigger | Payload |
+| :--- | :--- | :--- |
+| `CONNECTED` | WebSocket handshake complete | `{ "message": "WebSocket real-time connection established" }` |
+| `PING_RECEIVED` | Ping recorded via `/ping/*` or test button | `{ monitor, previousStatus, pingType }` |
+| `MONITOR_UPDATED` | Monitor status changed or edited | `{ monitor, previousStatus }` |
+| `MONITOR_CREATED` | New check created | `{ monitor }` |
+| `MONITOR_DELETED` | Check deleted | `{ monitorId }` |
+| `PONG` | Sent in response to client text `"ping"` | `{ timestamp }` |
+
+#### Client Keep-Alive:
+Clients should send a text message `"ping"` every 25 seconds. The Durable Object will respond with `{"type": "PONG"}`.

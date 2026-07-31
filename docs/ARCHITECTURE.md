@@ -10,6 +10,7 @@ Health Monitor is engineered to require zero external services. Every layer of t
 
 | Component | Cloudflare Primitive | Purpose |
 | :--- | :--- | :--- |
+| **Real-time Hub** | Cloudflare Durable Objects | Stateful WebSocket broadcasting with WebSocket Hibernation |
 | **API & Ingestion** | Cloudflare Workers | Serverless HTTP routing, ping processing, SVG rendering |
 | **Database** | Cloudflare D1 | Serverless SQL (SQLite at edge) storing checks, logs, channels, config |
 | **State Caching** | Cloudflare KV | Low-latency state lookup and rate-limiting cache |
@@ -99,3 +100,20 @@ The `NotifierService` handles asynchronous alert dispatching via `ctx.waitUntil(
 - **Slack**: Sends rich text blocks.
 - **Telegram**: Dispatches Markdown-formatted messages via Telegram Bot API.
 - **Generic Webhook**: Sends structured JSON payloads containing event type, check ID, timestamp, and status diff.
+
+---
+
+## 6. Real-Time WebSocket Architecture (Cloudflare Durable Objects)
+
+```
+[Browser Dashboard]  ◄═════ Native WebSocket (wss://.../api/ws) ═════►  [RealtimeBroadcaster]
+                                                                        (Cloudflare Durable Object)
+                                                                                  ▲
+[Ping Endpoint / Evaluator] ─── broadcastRealtimeEvent(env, type, data) ──────────┘
+```
+
+### Key Principles:
+1. **WebSocket Hibernation**: Connected WebSockets use `this.state.acceptWebSocket(ws)`. When no messages are active, the Durable Object hibernates in memory, incurring zero execution charges while maintaining open connections.
+2. **Event Fan-Out**: When a ping arrives at `/ping/:slug` or a status transition occurs in `MonitorEvaluator`, `broadcastRealtimeEvent()` posts the JSON payload to the Durable Object `/broadcast` route.
+3. **Broadcasting**: `RealtimeBroadcaster` iterates through `state.getWebSockets()` and pushes real-time payloads (`PING_RECEIVED`, `MONITOR_UPDATED`, `MONITOR_CREATED`, `MONITOR_DELETED`) to all connected frontend clients.
+4. **Client Lifecycle**: The React `useWebSocket` hook automatically handles connection initialization, exponential backoff reconnects, and 25-second keep-alive `ping`/`pong` frames.
