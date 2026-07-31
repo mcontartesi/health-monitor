@@ -1,0 +1,14 @@
+console.log("\n==================================================================");
+console.log(" 🎉 HEALTH MONITOR DEPLOYED SUCCESSFULLY!");
+console.log("==================================================================");
+console.log(" 🌐 1. Worker URL:");
+console.log("    Visit your worker URL (e.g. https://<your-worker>.workers.dev)");
+console.log("");
+console.log(" 🧙‍♂️ 2. Interactive Setup Wizard:");
+console.log("    On your first visit, the setup wizard will launch automatically.");
+console.log("    It will initialize database tables and configure your admin login!");
+console.log("");
+console.log(" ⚙️  3. Enable workers.dev Domain (If needed):");
+console.log("    If your URL is disabled in Cloudflare Dashboard:");
+console.log("    Go to Workers & Pages -> your worker -> Domains -> enable Production toggle.");
+console.log("==================================================================\n");

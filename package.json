@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "npx vite",
     "build": "npx vite build",
-    "deploy": "npx wrangler deploy",
+    "deploy": "npx wrangler deploy && node scripts/post-deploy.js",
     "db:setup": "npx wrangler d1 execute DB --file=./schema.sql",
     "db:setup:local": "npx wrangler d1 execute DB --local --file=./schema.sql",
     "test": "vitest run"
