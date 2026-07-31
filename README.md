@@ -245,24 +245,29 @@ All <code>/ping/*</code> and <code>/badge/*</code> routes are handled on dedicat
 
 ---
 
-## Contributing
+---
 
-Contributions are welcome! Follow these steps to contribute:
+## 🤝 Open Source Community & Governance
 
-1. **Fork the repository** on GitHub.
-2. **Create a feature branch**: `git checkout -b feature/my-cool-feature`
-3. **Run unit tests**: `npm test`
-4. **Build & verify**: `npm run build`
-5. **Open a Pull Request**.
+We believe in open, transparent, and collaborative software development.
+
+- **[Contributing Guide](CONTRIBUTING.md)**: Guidelines for opening issues, submitting Pull Requests, and code conventions.
+- **[Code of Conduct](CODE_OF_CONDUCT.md)**: Standards of conduct for participants in the Health Monitor community.
+- **[Changelog](CHANGELOG.md)**: Version history, release notes, and breaking changes.
+- **[Security Policy](SECURITY.md)**: Guidelines for reporting security vulnerabilities responsibly.
 
 ---
 
-## Author & Maintainer
+## 👤 Author & Maintainer
 
-Designed and developed by **[Maximiliano Contartesi](https://github.com/mcontartesi)**.
+Created and maintained with ❤️ by **[Maximiliano Contartesi](https://github.com/mcontartesi)**.
+
+- 🐙 **GitHub**: [@mcontartesi](https://github.com/mcontartesi)
+- 📝 **Medium**: [@maxiconta](https://medium.com/@maxiconta)
+- 📄 **Story**: Read [How a Silent Cron Job Ruined My Weekend](https://medium.com/@maxiconta/how-a-silent-cron-job-ruined-my-weekend-and-why-i-built-a-0-open-source-alternative-on-a57173e25db3)
 
 ---
 
-## License
+## 📜 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute it in your own projects.
