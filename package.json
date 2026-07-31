@@ -7,10 +7,14 @@
   "scripts": {
     "dev": "npx vite",
     "build": "npx vite build",
-    "deploy": "npm run build && npx wrangler deploy",
+    "deploy": "npx wrangler deploy",
     "db:setup": "npx wrangler d1 execute DB --file=./schema.sql",
     "db:setup:local": "npx wrangler d1 execute DB --local --file=./schema.sql",
     "test": "vitest run"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "workerd": true
   },
   "keywords": [
     "healthchecks",
