@@ -9,7 +9,8 @@
     "build": "npx vite build",
     "deploy": "npm run build && npx wrangler deploy",
     "db:setup": "npx wrangler d1 execute DB --file=./schema.sql",
-    "db:setup:local": "npx wrangler d1 execute DB --local --file=./schema.sql"
+    "db:setup:local": "npx wrangler d1 execute DB --local --file=./schema.sql",
+    "test": "vitest run"
   },
   "keywords": [
     "healthchecks",
@@ -38,6 +39,7 @@
     "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3",
     "vite": "^5.4.10",
+    "vitest": "^4.1.10",
     "wrangler": "^3.84.0"
   }
 }

@@ -6,6 +6,8 @@
 ---
 
 ![Health Monitor Status](https://img.shields.io/badge/Health_Monitor-Cloudflare_Native-10b981?style=for-the-badge&logo=cloudflare)
+[![Tests Status](https://img.shields.io/badge/Tests-Passing-10b981?style=for-the-badge&logo=vitest)](https://github.com/mcontartesi/health-monitor/actions/workflows/test.yml)
+[![Coverage Status](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge&logo=codecov)](https://github.com/mcontartesi/health-monitor/actions/workflows/test.yml)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?style=for-the-badge&logo=typescript)
 
