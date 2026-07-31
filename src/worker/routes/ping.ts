@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { Env } from '../db/types';
 import { DBClient } from '../db/client';
 import { NotifierService } from '../services/notifier';
+import { broadcastRealtimeEvent } from '../services/broadcaster';
 
 export const pingRouter = new Hono<{ Bindings: Env }>();
 
@@ -52,6 +53,15 @@ pingRouter.all('/:id/:type?', async (c) => {
     body_snippet: bodySnippet,
     exit_code: exitCode,
   });
+
+  // Broadcast real-time ping event to connected WebSocket clients
+  c.executionCtx.waitUntil(
+    broadcastRealtimeEvent(c.env, 'PING_RECEIVED', {
+      monitor: updatedMonitor,
+      previousStatus,
+      pingType,
+    })
+  );
 
   // If monitor was DOWN or GRACE and now recovered to UP, send Recovery Alert!
   if ((previousStatus === 'down' || previousStatus === 'grace') && updatedMonitor.status === 'up') {

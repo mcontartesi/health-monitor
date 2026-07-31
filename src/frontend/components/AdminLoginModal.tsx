@@ -31,7 +31,7 @@ export function AdminLoginModal({ isOpen, onSuccess }: AdminLoginModalProps) {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await res.json();
+      const data: any = await res.json();
       if (!res.ok || !data.success || !data.token) {
         throw new Error(data.error || 'Invalid credentials');
       }

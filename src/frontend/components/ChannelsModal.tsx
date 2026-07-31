@@ -24,7 +24,7 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
   const fetchChannels = async () => {
     try {
       const res = await fetch(`/api/channels?project_id=${projectId}`);
-      const data = await res.json();
+      const data: any = await res.json();
       setChannels(data.channels || []);
     } catch (e) {
       console.error(e);
@@ -79,7 +79,7 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
   const handleTestChannel = async (id: string) => {
     try {
       const res = await fetch(`/api/channels/${id}/test`, { method: 'POST' });
-      const data = await res.json();
+      const data: any = await res.json();
       alert(data.message || 'Test notification sent!');
     } catch (e) {
       alert('Failed to send test alert');

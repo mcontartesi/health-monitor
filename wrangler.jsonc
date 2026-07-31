@@ -27,5 +27,19 @@
       "binding": "KV",
       "id": "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
     }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "REALTIME_BROADCASTER",
+        "class_name": "RealtimeBroadcaster"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["RealtimeBroadcaster"]
+    }
   ]
 }

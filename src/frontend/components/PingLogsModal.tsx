@@ -27,7 +27,7 @@ export const PingLogsModal: React.FC<PingLogsModalProps> = ({ monitor, onClose }
         headers['Authorization'] = `Bearer ${token}`;
       }
       const res = await fetch(`/api/monitors/${monitor.id}/logs`, { headers });
-      const data = await res.json();
+      const data: any = await res.json();
       setLogs(data.logs || []);
     } catch (e) {
       console.error(e);

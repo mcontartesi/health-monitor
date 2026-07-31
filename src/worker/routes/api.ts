@@ -2,12 +2,23 @@ import { Hono } from 'hono';
 import { Env } from '../db/types';
 import { DBClient } from '../db/client';
 import { NotifierService } from '../services/notifier';
+import { broadcastRealtimeEvent } from '../services/broadcaster';
 
 import { setupRouter } from './setup';
 
 export const apiRouter = new Hono<{ Bindings: Env }>();
 
 apiRouter.route('/setup', setupRouter);
+
+// WebSocket real-time connection endpoint
+apiRouter.get('/ws', async (c) => {
+  if (!c.env.REALTIME_BROADCASTER) {
+    return c.text('Realtime WebSocket binding not configured', 503);
+  }
+  const id = c.env.REALTIME_BROADCASTER.idFromName('global_dashboard');
+  const stub = c.env.REALTIME_BROADCASTER.get(id);
+  return await stub.fetch(c.req.raw);
+});
 
 // Helper to create and verify admin bearer tokens
 function generateAdminToken(username: string, pass: string): string {
@@ -109,11 +120,11 @@ apiRouter.post('/auth/login', async (c) => {
   }
 });
 
-// Middleware: Require authentication for write/read API routes (except setup)
+// Middleware: Require authentication for write/read API routes (except setup, user, login, ws)
 apiRouter.use('*', async (c, next) => {
   const path = c.req.path;
-  // Exclude setup, user, login routes from middleware lock
-  if (path.startsWith('/api/setup') || path === '/api/user' || path === '/api/auth/login') {
+  // Exclude setup, user, login, ws routes from middleware lock
+  if (path.startsWith('/api/setup') || path.endsWith('/user') || path.endsWith('/login') || path.endsWith('/ws')) {
     return await next();
   }
 
@@ -213,6 +224,11 @@ apiRouter.post('/monitors', async (c) => {
       cron_expression: body.cron_expression,
       grace_seconds: Number(body.grace_seconds) || 900,
     });
+
+    c.executionCtx.waitUntil(
+      broadcastRealtimeEvent(c.env, 'MONITOR_CREATED', { monitor })
+    );
+
     return c.json({ monitor }, 201);
   } catch (err: any) {
     return c.json({ error: err.message || 'Failed to create monitor' }, 400);
@@ -228,6 +244,13 @@ apiRouter.put('/monitors/:id', async (c) => {
   if (!updated) return c.json({ error: 'Monitor update failed or not found' }, 404);
 
   const monitor = await db.getMonitorBySlugOrId(id);
+
+  if (monitor) {
+    c.executionCtx.waitUntil(
+      broadcastRealtimeEvent(c.env, 'MONITOR_UPDATED', { monitor })
+    );
+  }
+
   return c.json({ monitor });
 });
 
@@ -239,6 +262,11 @@ apiRouter.post('/monitors/:id/pause', async (c) => {
 
   const newStatus = monitor.status === 'paused' ? 'up' : 'paused';
   await db.updateMonitor(id, { status: newStatus });
+  const updatedMonitor = { ...monitor, status: newStatus as any };
+
+  c.executionCtx.waitUntil(
+    broadcastRealtimeEvent(c.env, 'MONITOR_UPDATED', { monitor: updatedMonitor })
+  );
 
   return c.json({ success: true, status: newStatus });
 });
@@ -257,6 +285,14 @@ apiRouter.post('/monitors/:id/ping', async (c) => {
     body_snippet: 'Manual test triggered from dashboard UI',
   });
 
+  c.executionCtx.waitUntil(
+    broadcastRealtimeEvent(c.env, 'PING_RECEIVED', {
+      monitor: updatedMonitor,
+      logId,
+      pingType: 'success',
+    })
+  );
+
   return c.json({ success: true, monitor: updatedMonitor, logId });
 });
 
@@ -264,6 +300,13 @@ apiRouter.delete('/monitors/:id', async (c) => {
   const id = c.req.param('id');
   const db = new DBClient(c.env);
   const deleted = await db.deleteMonitor(id);
+
+  if (deleted) {
+    c.executionCtx.waitUntil(
+      broadcastRealtimeEvent(c.env, 'MONITOR_DELETED', { monitorId: id })
+    );
+  }
+
   return c.json({ success: deleted });
 });
 
