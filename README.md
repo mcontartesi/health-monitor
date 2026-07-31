@@ -1,4 +1,4 @@
-# 💚 Health Monitor
+# Health Monitor
 
 > **100% Cloudflare Ecosystem Native Cron Job & Service Health Monitoring**  
 > Modern, serverless, zero-maintenance alternative to [Healthchecks.io](https://github.com/healthchecks/healthchecks) — running entirely on **Cloudflare Workers**, **Cloudflare D1**, **Cloudflare KV**, and **Cloudflare Assets**.
@@ -14,7 +14,7 @@
 
 ---
 
-## ⚡ 1-Click Deployment (Recommended)
+## 1-Click Deployment (Recommended)
 
 Deploy **Health Monitor** directly to your Cloudflare account in seconds — **zero CLI commands required**:
 
@@ -24,28 +24,28 @@ Deploy **Health Monitor** directly to your Cloudflare account in seconds — **z
 1. Click the **Deploy to Cloudflare Workers** button above.
 2. Cloudflare will automatically fork the repository, provision Cloudflare D1 & KV bindings, and deploy your Worker.
 3. Open your generated Worker URL (`https://health-monitor.your-subdomain.workers.dev`) in any browser.  
-   👉 The interactive **Setup Wizard** will launch automatically on your first visit to create database tables and set your custom **Admin Username & Password**!
+   The interactive **Setup Wizard** will launch automatically on your first visit to create database tables and set your custom **Admin Username & Password**!
 
 ---
 
-## 🌟 Why Health Monitor?
+## Why Health Monitor?
 
 Traditional cron monitoring services require running background worker servers, Redis caches, PostgreSQL instances, and celery queues.  
 **Health Monitor** re-imagines cron heartbeat monitoring from the ground up for the modern Edge ecosystem:
 
-- ⚡ **Zero External Infrastructure**: No VPS, Docker containers, Kubernetes pods, or external databases needed. 100% serverless!
-- ⚡ **Native Real-Time WebSockets**: Powered by **Cloudflare Durable Objects** with *WebSocket Hibernation* for instant live status updates & glowing border visual flashes without polling!
-- 🛡️ **Edge Performance**: Ping ingestion responds in `< 20ms` globally via Cloudflare's 300+ edge locations.
-- 🕒 **Cloudflare Cron Triggers**: Background check heartbeat evaluator runs automatically every minute using Cloudflare Workers `scheduled` triggers.
-- 📊 **D1 Relational Storage**: Serverless SQLite database at the edge storing monitors, audit logs, and alert configurations.
-- 🎨 **Modern Dark UI**: React + Tailwind CSS dashboard hosted on Cloudflare Workers Static Assets (`assets`).
-- 🔔 **Multi-Channel Alerting**: Instant notifications via **Discord**, **Slack**, **Telegram**, and **Custom Webhooks** when checks fail or recover.
-- 🧙 **HTTP Setup Wizard**: Automatic first-time web wizard to initialize database tables and admin credentials with zero CLI hassle.
-- 🏷️ **Dynamic SVG Badges**: Embed real-time status badges in your GitHub READMEs (`/badge/:slug/status.svg`).
+- **Zero External Infrastructure**: No VPS, Docker containers, Kubernetes pods, or external databases needed. 100% serverless!
+- **Native Real-Time WebSockets**: Powered by **Cloudflare Durable Objects** with *WebSocket Hibernation* for instant live status updates & glowing border visual flashes without polling.
+- **Edge Performance**: Ping ingestion responds in `< 20ms` globally via Cloudflare's 300+ edge locations.
+- **Cloudflare Cron Triggers**: Background check heartbeat evaluator runs automatically every minute using Cloudflare Workers `scheduled` triggers.
+- **D1 Relational Storage**: Serverless SQLite database at the edge storing monitors, audit logs, and alert configurations.
+- **Modern Dark UI**: React + Tailwind CSS dashboard hosted on Cloudflare Workers Static Assets (`assets`).
+- **Multi-Channel Alerting**: Instant notifications via **Discord**, **Slack**, **Telegram**, and **Custom Webhooks** when checks fail or recover.
+- **HTTP Setup Wizard**: Automatic first-time web wizard to initialize database tables and admin credentials with zero CLI hassle.
+- **Dynamic SVG Badges**: Embed real-time status badges in your GitHub READMEs (`/badge/:slug/status.svg`).
 
 ---
 
-## 💻 Local Development & CLI Setup (Optional)
+## Local Development & CLI Setup (Optional)
 
 If you prefer running or customizing Health Monitor locally:
 
@@ -80,7 +80,7 @@ npm run deploy
 
 ---
 
-## 📡 Ping API Usage
+## Ping API Usage
 
 Health Monitor supports simple HTTP ping signals from your scripts, cronjobs, background workers, and CI/CD pipelines:
 
@@ -110,21 +110,21 @@ curl -m 10 https://your-worker.workers.dev/ping/db-backup/$?
 
 ---
 
-## ⚡ Native Real-Time WebSockets & Live Dashboard Highlights
+## Native Real-Time WebSockets & Live Dashboard Highlights
 
 Health Monitor features **native, zero-polling real-time updates** powered by **Cloudflare Durable Objects** with *WebSocket Hibernation*:
 
-- 🔌 **Endpoint**: `/api/ws` (WebSocket connection for browser dashboard).
-- 🛰️ **Durable Object Hub (`RealtimeBroadcaster`)**: Manages stateful client connections at the Cloudflare edge without memory leaks or high compute cost.
-- 💥 **Instant Live Highlights**: When an incoming HTTP ping (`/ping/:slug`) or state evaluation transition (`UP` → `GRACE` → `DOWN`) occurs:
+- **Endpoint**: `/api/ws` (WebSocket connection for browser dashboard).
+- **Durable Object Hub (`RealtimeBroadcaster`)**: Manages stateful client connections at the Cloudflare edge without memory leaks or high compute cost.
+- **Instant Live Highlights**: When an incoming HTTP ping (`/ping/:slug`) or state evaluation transition (`UP` → `GRACE` → `DOWN`) occurs:
   - The backend broadcasts a `PING_RECEIVED` or `MONITOR_UPDATED` event to all connected dashboard WebSockets.
   - The dashboard updates the monitor card status **instantly** in under 10ms.
   - The corresponding monitor card flashes with a **glowing emerald border shadow** (`border-emerald-500/80 shadow-[0_0_30px_rgba(16,185,129,0.35)]`) and displays a **`PING RECEIVED`** animated pulse badge for 2.5 seconds.
-- 🔄 **Auto-Reconnect**: The React frontend hook (`useWebSocket`) automatically reconnects with exponential backoff on network interruptions and maintains keep-alive ping/pong heartbeats.
+- **Auto-Reconnect**: The React frontend hook (`useWebSocket`) automatically reconnects with exponential backoff on network interruptions and maintains keep-alive ping/pong heartbeats.
 
 ---
 
-## 🖼️ GitHub Dynamic Status Badges
+## GitHub Dynamic Status Badges
 
 Health Monitor renders real-time, zero-cache SVG status badges designed for embedding into GitHub READMEs, status pages, and documentation:
 
@@ -162,11 +162,11 @@ https://<your-worker-url>/badge/:slug_or_id/status.svg
 | **PAUSED** | `health \| PAUSED` | Slate Gray | `#6B7280` | Check manually paused by admin |
 | **UNKNOWN** | `health \| UNKNOWN` | Slate Gray | `#6B7280` | Monitor slug or ID does not exist |
 
-> ⚡ **Zero Cache Delay**: Badge responses enforce `Cache-Control: no-cache, no-store, must-revalidate` headers so GitHub's Camo image proxy always renders live status.
+> **Zero Cache Delay**: Badge responses enforce `Cache-Control: no-cache, no-store, must-revalidate` headers so GitHub's Camo image proxy always renders live status.
 
 ---
 
-## 🔑 Admin Password Authentication
+## Admin Password Authentication
 
 Health Monitor includes **built-in Admin Password protection** out-of-the-box:
 
@@ -183,7 +183,7 @@ Health Monitor includes **built-in Admin Password protection** out-of-the-box:
 
 ---
 
-## 🔐 Zero Trust & Cloudflare Access Authentication
+## Zero Trust & Cloudflare Access Authentication
 
 Health Monitor supports **Cloudflare Access (Cloudflare One)** out-of-the-box for Zero Trust authentication **without breaking 1-Click Deployment simplicity**:
 
@@ -198,7 +198,7 @@ Health Monitor supports **Cloudflare Access (Cloudflare One)** out-of-the-box fo
 
 ---
 
-## 🧱 Architecture Overview
+## Architecture Overview
 
 ```
                         ┌──────────────────────────────────────────────┐
@@ -220,7 +220,7 @@ For complete technical specifications, see [docs/ARCHITECTURE.md](docs/ARCHITECT
 
 ---
 
-## ❓ Troubleshooting & FAQ
+## Troubleshooting & FAQ
 
 <details>
 <summary><b>Q: D1_ERROR: no such table: monitors?</b></summary>
@@ -237,7 +237,7 @@ All <code>/ping/*</code> and <code>/badge/*</code> routes are handled on dedicat
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Follow these steps to contribute:
 
@@ -249,12 +249,12 @@ Contributions are welcome! Follow these steps to contribute:
 
 ---
 
-## 👨‍💻 Author & Maintainer
+## Author & Maintainer
 
 Designed and developed by **[Maximiliano Contartesi](https://github.com/mcontartesi)**.
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).
