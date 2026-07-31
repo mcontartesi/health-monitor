@@ -17,8 +17,9 @@ import { DemoBanner } from './components/DemoBanner';
 import { useWebSocket, RealtimeEvent } from './hooks/useWebSocket';
 
 const isGitHubPages = typeof window !== 'undefined' && (
-  window.location.hostname.includes('github.io') ||
-  window.location.pathname.includes('/health-monitor/')
+  window.location.hostname === 'mcontartesi.github.io' ||
+  window.location.hostname.endsWith('.github.io') ||
+  window.location.pathname.startsWith('/health-monitor')
 );
 
 const MOCK_DEMO_MONITORS: Monitor[] = [
