@@ -11,6 +11,9 @@
 [![Coverage Status](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge&logo=codecov)](https://github.com/mcontartesi/health-monitor/actions/workflows/test.yml)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?style=for-the-badge&logo=typescript)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Interactive_Preview-emerald?style=for-the-badge&logo=github)](https://mcontartesi.github.io/health-monitor/)
+
+> 📸 **Live Interactive Demo / Preview**: You can see a live interactive preview and screenshot of the application UI at **[https://mcontartesi.github.io/health-monitor/](https://mcontartesi.github.io/health-monitor/)**.
 
 ---
 
