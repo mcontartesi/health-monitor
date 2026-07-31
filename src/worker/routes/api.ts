@@ -9,10 +9,34 @@ export const apiRouter = new Hono<{ Bindings: Env }>();
 
 apiRouter.route('/setup', setupRouter);
 
-// Auth / User Identity (Supports Cloudflare Access / Zero Trust out-of-the-box)
+// Helper to create and verify admin bearer tokens
+function generateAdminToken(username: string, pass: string): string {
+  return btoa(`${username}:${pass}:health_monitor_salt_2026`);
+}
+
+function isValidAuth(c: any): boolean {
+  // 1. Pass if Cloudflare Access header is present
+  const cfAccessEmail = c.req.header('Cf-Access-Authenticated-User-Email');
+  if (cfAccessEmail) return true;
+
+  // 2. Pass if valid Bearer Token is provided
+  const authHeader = c.req.header('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    const expectedUser = c.env.ADMIN_USERNAME || 'admin';
+    const expectedPass = c.env.ADMIN_PASSWORD || 'admin';
+    const expectedToken = generateAdminToken(expectedUser, expectedPass);
+    if (token === expectedToken) return true;
+  }
+
+  return false;
+}
+
+// Public Auth Endpoints
 apiRouter.get('/user', (c) => {
   const email = c.req.header('Cf-Access-Authenticated-User-Email');
   const country = c.req.header('Cf-Ipcountry');
+  const authHeader = c.req.header('Authorization');
 
   if (email) {
     return c.json({
@@ -23,10 +47,64 @@ apiRouter.get('/user', (c) => {
     });
   }
 
+  if (isValidAuth(c)) {
+    return c.json({
+      authenticated: true,
+      provider: 'Admin Password',
+      email: `${c.env.ADMIN_USERNAME || 'admin'}@local`,
+      country: country || 'Local',
+    });
+  }
+
   return c.json({
     authenticated: false,
-    provider: 'Direct Access',
+    provider: 'None',
   });
+});
+
+apiRouter.post('/auth/login', async (c) => {
+  try {
+    const body = await c.req.json();
+    const username = (body.username || '').trim();
+    const password = (body.password || '').trim();
+
+    const expectedUser = c.env.ADMIN_USERNAME || 'admin';
+    const expectedPass = c.env.ADMIN_PASSWORD || 'admin';
+
+    if (username === expectedUser && password === expectedPass) {
+      const token = generateAdminToken(expectedUser, expectedPass);
+      return c.json({
+        success: true,
+        token,
+        username: expectedUser,
+      });
+    }
+
+    return c.json({ success: false, error: 'Invalid admin username or password' }, 401);
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message || 'Login failed' }, 400);
+  }
+});
+
+// Middleware: Require authentication for write/read API routes (except setup)
+apiRouter.use('*', async (c, next) => {
+  const path = c.req.path;
+  // Exclude setup, user, login routes from middleware lock
+  if (path.startsWith('/api/setup') || path === '/api/user' || path === '/api/auth/login') {
+    return await next();
+  }
+
+  if (!isValidAuth(c)) {
+    return c.json(
+      {
+        error: 'Admin authentication required',
+        authRequired: true,
+      },
+      401
+    );
+  }
+
+  await next();
 });
 
 // Projects

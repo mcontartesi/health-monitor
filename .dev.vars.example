@@ -2,8 +2,9 @@
 # Copy this file to .dev.vars for local testing.
 # DO NOT COMMIT .dev.vars TO GIT!
 
-# Example API Secret Key (if using custom secret authentication)
-# API_SECRET="your-local-dev-secret-key"
+# Admin Portal Credentials (Fallback protection when Cloudflare Access is not active)
+ADMIN_USERNAME="admin"
+ADMIN_PASSWORD="admin"
 
-# Example Webhook Signing Secret
-# WEBHOOK_SIGNING_SECRET="your-local-webhook-signing-secret"
+# Production Secret Override via Wrangler CLI:
+# npx wrangler secret put ADMIN_PASSWORD

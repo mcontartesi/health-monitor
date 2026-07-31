@@ -171,6 +171,23 @@ Health Monitor supports **Cloudflare Access (Cloudflare One)** out-of-the-box fo
 
 ---
 
+## 🔑 Admin Password Authentication (Fallback Protection)
+
+If you deploy **Health Monitor** without Cloudflare Access/Zero Trust, the application includes **built-in Admin Password protection**:
+
+- **Default Credentials**: Username `admin`, Password `admin`.
+- **Automatic Challenge**: Unauthenticated API requests receive HTTP 401 and trigger a modern Admin Login modal in the dashboard.
+- **Custom Admin Password**: Set your custom production password securely via Wrangler CLI:
+  ```bash
+  npx wrangler secret put ADMIN_PASSWORD
+  ```
+- **Custom Admin Username**: Optionally override default username:
+  ```bash
+  npx wrangler secret put ADMIN_USERNAME
+  ```
+
+---
+
 ## 🧱 Architecture Overview
 
 ```

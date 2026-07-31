@@ -7,8 +7,9 @@ import { SnippetGeneratorModal } from './components/SnippetGeneratorModal';
 import { PingLogsModal } from './components/PingLogsModal';
 import { ChannelsModal } from './components/ChannelsModal';
 import { SetupWizardModal } from './components/SetupWizardModal';
+import { AdminLoginModal } from './components/AdminLoginModal';
 import { Footer } from './components/Footer';
-import { Search, ShieldAlert, Plus, RefreshCw, Cpu, Database } from 'lucide-react';
+import { Search, ShieldAlert, Plus, RefreshCw, Cpu, Database, Lock } from 'lucide-react';
 import { Monitor } from '../worker/db/types';
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isChannelsModalOpen, setIsChannelsModalOpen] = useState(false);
   const [isSetupWizardOpen, setIsSetupWizardOpen] = useState(false);
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [selectedSnippetMonitor, setSelectedSnippetMonitor] = useState<Monitor | null>(null);
   const [selectedLogsMonitor, setSelectedLogsMonitor] = useState<Monitor | null>(null);
 
@@ -37,9 +39,25 @@ export default function App() {
     return () => clearInterval(timer);
   }, [projectId]);
 
+  const authFetch = async (url: string, options: RequestInit = {}) => {
+    const token = localStorage.getItem('health_monitor_token');
+    const headers: Record<string, string> = {
+      ...(options.headers as Record<string, string> || {}),
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(url, { ...options, headers });
+    if (res.status === 401) {
+      setIsAdminLoginOpen(true);
+    }
+    return res;
+  };
+
   const fetchUserInfo = async () => {
     try {
-      const res = await fetch('/api/user');
+      const res = await authFetch('/api/user');
       const data = await res.json();
       if (data.authenticated) {
         setUserInfo(data);
@@ -53,7 +71,7 @@ export default function App() {
     if (!silent) setIsLoading(true);
     setIsRefreshing(true);
     try {
-      const res = await fetch(`/api/monitors?project_id=${projectId}`);
+      const res = await authFetch(`/api/monitors?project_id=${projectId}`);
       const data = await res.json();
 
       if (data.needSetup) {
@@ -74,7 +92,7 @@ export default function App() {
   };
 
   const handleCreateMonitor = async (data: any) => {
-    await fetch('/api/monitors', {
+    await authFetch('/api/monitors', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -83,18 +101,18 @@ export default function App() {
   };
 
   const handleTestPing = async (m: Monitor) => {
-    await fetch(`/api/monitors/${m.id}/ping`, { method: 'POST' });
+    await authFetch(`/api/monitors/${m.id}/ping`, { method: 'POST' });
     fetchMonitors(true);
   };
 
   const handleTogglePause = async (m: Monitor) => {
-    await fetch(`/api/monitors/${m.id}/pause`, { method: 'POST' });
+    await authFetch(`/api/monitors/${m.id}/pause`, { method: 'POST' });
     fetchMonitors(true);
   };
 
   const handleDeleteMonitor = async (m: Monitor) => {
     if (!confirm(`Are you sure you want to delete check "${m.name}"?`)) return;
-    await fetch(`/api/monitors/${m.id}`, { method: 'DELETE' });
+    await authFetch(`/api/monitors/${m.id}`, { method: 'DELETE' });
     fetchMonitors();
   };
 
@@ -212,6 +230,15 @@ export default function App() {
       <Footer />
 
       {/* Modals */}
+      <AdminLoginModal
+        isOpen={isAdminLoginOpen}
+        onSuccess={() => {
+          setIsAdminLoginOpen(false);
+          fetchMonitors();
+          fetchUserInfo();
+        }}
+      />
+
       <SetupWizardModal
         isOpen={isSetupWizardOpen}
         onClose={() => setIsSetupWizardOpen(false)}
