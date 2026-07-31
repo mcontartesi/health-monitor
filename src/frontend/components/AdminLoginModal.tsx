@@ -98,7 +98,7 @@ export function AdminLoginModal({ isOpen, onSuccess }: AdminLoginModalProps) {
               className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 outline-none transition"
             />
             <p className="text-[11px] text-slate-500 pt-1">
-              Default password is <code className="text-emerald-400 bg-slate-900 px-1 py-0.5 rounded font-mono">admin</code>. Override via <code className="text-slate-400 font-mono">ADMIN_PASSWORD</code> secret.
+              Enter credentials configured during initial setup, or set via <code className="text-slate-400 font-mono">ADMIN_PASSWORD</code> secret.
             </p>
           </div>
 

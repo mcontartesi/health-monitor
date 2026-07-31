@@ -8,8 +8,8 @@ interface SetupWizardModalProps {
 }
 
 export function SetupWizardModal({ isOpen, onClose, onSuccess }: SetupWizardModalProps) {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [withSampleData, setWithSampleData] = useState(true);
   const [isInitializing, setIsInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -129,7 +129,7 @@ export function SetupWizardModal({ isOpen, onClose, onSuccess }: SetupWizardModa
                       required
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="admin"
+                      placeholder="e.g. admin"
                       className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 outline-none transition"
                     />
                   </div>
@@ -140,11 +140,11 @@ export function SetupWizardModal({ isOpen, onClose, onSuccess }: SetupWizardModa
                       <span>Admin Password</span>
                     </label>
                     <input
-                      type="text"
+                      type="password"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="admin"
+                      placeholder="Set admin password..."
                       className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 outline-none transition"
                     />
                   </div>

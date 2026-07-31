@@ -132,20 +132,45 @@ curl -m 10 https://your-worker.workers.dev/ping/db-backup/$?
 
 ---
 
-## 🖼️ GitHub Status Badges
+## 🖼️ GitHub Dynamic Status Badges
 
-Embed real-time status badges into your project READMEs:
+Health Monitor renders real-time, zero-cache SVG status badges designed for embedding into GitHub READMEs, status pages, and documentation:
 
-```markdown
-![Backup Status](https://your-worker.workers.dev/badge/db-backup/status.svg)
+### Badge Endpoint URL
+```text
+https://<your-worker-url>/badge/:slug_or_id/status.svg
 ```
 
-| Monitor Status | Badge Preview |
-| :--- | :--- |
-| **UP** | `[ health | UP ]` (Emerald Green) |
-| **GRACE** | `[ health | LATE ]` (Amber Yellow) |
-| **DOWN** | `[ health | DOWN ]` (Rose Red) |
-| **PAUSED** | `[ health | PAUSED ]` (Slate Gray) |
+### Embedding Snippets
+
+#### 1. Standard Markdown
+```markdown
+![Database Backup Status](https://your-worker.workers.dev/badge/db-backup/status.svg)
+```
+
+#### 2. Clickable Badge (Links to your Dashboard)
+```markdown
+[![Database Backup Status](https://your-worker.workers.dev/badge/db-backup/status.svg)](https://your-worker.workers.dev)
+```
+
+#### 3. HTML Format (Custom Sizing)
+```html
+<a href="https://your-worker.workers.dev">
+  <img src="https://your-worker.workers.dev/badge/db-backup/status.svg" alt="Health Status" />
+</a>
+```
+
+### Status Color Matrix
+
+| Monitor State | Badge Text | Badge Color | Hex | Condition |
+| :--- | :--- | :--- | :--- | :--- |
+| **UP** | `health \| UP` | Emerald Green | `#10B981` | Heartbeat ping received within schedule |
+| **GRACE** | `health \| LATE` | Amber Yellow | `#F59E0B` | Ping overdue, currently in grace window |
+| **DOWN** | `health \| DOWN` | Rose Red | `#EF4444` | Ping overdue past grace period |
+| **PAUSED** | `health \| PAUSED` | Slate Gray | `#6B7280` | Check manually paused by admin |
+| **UNKNOWN** | `health \| UNKNOWN` | Slate Gray | `#6B7280` | Monitor slug or ID does not exist |
+
+> ⚡ **Zero Cache Delay**: Badge responses enforce `Cache-Control: no-cache, no-store, must-revalidate` headers so GitHub's Camo image proxy always renders live status.
 
 ---
 
@@ -153,7 +178,7 @@ Embed real-time status badges into your project READMEs:
 
 Health Monitor includes **built-in Admin Password protection** out-of-the-box:
 
-- **Default Credentials**: Username `admin`, Password `admin` (configured via Setup Wizard on initial launch).
+- **Setup Wizard Credentials**: Custom username and password set directly by you in the browser during the first-time setup wizard.
 - **Automatic Challenge**: Unauthenticated API requests receive HTTP 401 and trigger a modern Admin Login modal in the dashboard.
 - **Custom Production Password**: Set your custom production password securely via Wrangler CLI:
   ```bash

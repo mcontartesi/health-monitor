@@ -19,9 +19,12 @@ setupRouter.get('/status', async (c) => {
 setupRouter.post('/init', async (c) => {
   try {
     const body = await c.req.json().catch(() => ({}));
-    const withSampleData = body.withSampleData !== false;
-    const username = (body.username || 'admin').trim();
-    const password = (body.password || 'admin').trim();
+    const username = (body.username || '').trim();
+    const password = (body.password || '').trim();
+
+    if (!username || !password) {
+      return c.json({ success: false, error: 'Admin username and password are required for initial setup' }, 400);
+    }
 
     const db = new DBClient(c.env);
     const result = await db.initializeSchema({
