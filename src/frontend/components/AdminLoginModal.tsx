@@ -105,7 +105,7 @@ export function AdminLoginModal({ isOpen, onSuccess }: AdminLoginModalProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full mt-2 inline-flex items-center justify-center space-x-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/50 transition disabled:opacity-50"
+            className="w-full mt-2 inline-flex items-center justify-center space-x-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/50 transition duration-150 active:scale-[0.96] disabled:opacity-50 cursor-pointer"
           >
             {isSubmitting ? (
               <>

@@ -218,7 +218,7 @@ export function SetupWizardModal({ isOpen, onClose, onSuccess }: SetupWizardModa
             <button
               onClick={() => handleInitDatabase()}
               disabled={isInitializing}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/50 transition disabled:opacity-50"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/50 transition duration-150 active:scale-[0.96] disabled:opacity-50 cursor-pointer"
             >
               {isInitializing ? (
                 <>

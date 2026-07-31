@@ -137,9 +137,9 @@ try {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition duration-150 active:scale-[0.96] ${
                 activeTab === tab.id
-                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
+                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm shadow-cyan-500/10'
                   : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
               }`}
             >
@@ -149,10 +149,10 @@ try {
         </div>
 
         {/* Code Snippet Container */}
-        <div className="relative bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs overflow-x-auto">
+        <div className="relative bg-slate-950/90 rounded-2xl border border-slate-800 p-4 font-mono text-xs overflow-x-auto">
           <button
             onClick={copyToClipboard}
-            className="absolute top-3 right-3 flex items-center space-x-1 px-2.5 py-1 text-xs font-sans font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md transition"
+            className="absolute top-3 right-3 flex items-center space-x-1.5 px-3 py-1.5 text-xs font-sans font-semibold text-slate-200 bg-slate-800/80 hover:bg-slate-700 border border-slate-700/80 rounded-xl transition duration-150 active:scale-[0.96]"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied!' : 'Copy Code'}</span>
@@ -163,12 +163,12 @@ try {
         </div>
 
         {/* SVG Badge Embed Preview */}
-        <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-800 flex items-center justify-between">
+        <div className="bg-slate-900/60 rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-1">GitHub README Badge</h4>
             <p className="text-xs text-slate-400">Embed real-time status in your project documentation:</p>
           </div>
-          <div className="bg-slate-950 px-3 py-2 rounded border border-slate-800 flex items-center space-x-2">
+          <div className="bg-slate-950 px-3 py-2 rounded-xl border border-slate-800 flex items-center space-x-2">
             <img
               src={`${window.location.origin}/badge/${monitor.slug}/status.svg`}
               alt="Badge Status"
@@ -180,7 +180,7 @@ try {
         <div className="flex justify-end pt-2 border-t border-slate-800">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg"
+            className="px-4 py-2 text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl transition duration-150 active:scale-[0.96]"
           >
             Close
           </button>

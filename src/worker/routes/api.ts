@@ -117,6 +117,20 @@ apiRouter.use('*', async (c, next) => {
     return await next();
   }
 
+  const db = new DBClient(c.env);
+  const setupStatus = await db.checkSetupStatus();
+  if (!setupStatus.initialized) {
+    return c.json(
+      {
+        needSetup: true,
+        monitors: [],
+        stats: { total: 0, up: 0, grace: 0, down: 0, paused: 0 },
+        message: 'D1 Database tables have not been created yet. Please run the setup wizard.',
+      },
+      200
+    );
+  }
+
   const authenticated = await isValidAuth(c);
   if (!authenticated) {
     return c.json(

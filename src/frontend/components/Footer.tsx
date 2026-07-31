@@ -9,21 +9,21 @@ const GithubIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="border-t border-slate-800/80 bg-[#070a11] py-6 px-6 text-slate-400">
+    <footer className="border-t border-slate-800/80 bg-[#05080e] py-8 px-6 text-slate-400">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         
         {/* Left: Branding & Stack */}
         <div className="flex items-center space-x-3 text-xs">
-          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+          <div className="flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold shadow-sm">
             <Cloud className="w-3.5 h-3.5" />
             <span>Cloudflare Native</span>
           </div>
-          <span className="text-slate-500">•</span>
-          <span className="text-slate-400 font-mono">MIT License</span>
+          <span className="text-slate-600">•</span>
+          <span className="text-slate-400 font-mono text-[11px]">MIT License</span>
         </div>
 
         {/* Center/Right: Author Attribution with GitHub link */}
-        <div className="flex items-center space-x-1.5 text-xs text-slate-300">
+        <div className="flex items-center space-x-1.5 text-xs text-slate-400">
           <span>Designed & Built with</span>
           <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500/30 animate-pulse" />
           <span>by</span>
@@ -31,7 +31,7 @@ export const Footer: React.FC = () => {
             href="https://github.com/mcontartesi"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center space-x-1 font-semibold text-white hover:text-emerald-400 underline decoration-slate-700 hover:decoration-emerald-400 transition-colors"
+            className="inline-flex items-center space-x-1.5 font-bold text-slate-200 hover:text-emerald-400 underline decoration-slate-700 hover:decoration-emerald-400 transition duration-150 active:scale-[0.96]"
           >
             <span>Maximiliano Contartesi</span>
             <GithubIcon className="w-3.5 h-3.5 text-slate-400" />

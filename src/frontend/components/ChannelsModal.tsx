@@ -123,14 +123,14 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => handleTestChannel(ch.id)}
-                    className="flex items-center space-x-1 px-2.5 py-1 text-xs font-medium text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-md"
+                    className="flex items-center space-x-1 px-3 py-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl transition duration-150 active:scale-[0.96]"
                   >
                     <Send className="w-3 h-3" />
                     <span>Test</span>
                   </button>
                   <button
                     onClick={() => handleDeleteChannel(ch.id)}
-                    className="p-1 text-rose-400 hover:text-rose-300 rounded hover:bg-rose-500/10"
+                    className="p-1.5 text-rose-400 hover:text-rose-300 rounded-xl hover:bg-rose-500/10 transition duration-150 active:scale-[0.96]"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -141,8 +141,8 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
         </div>
 
         {/* Add Channel Form */}
-        <form onSubmit={handleAddChannel} className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
+        <form onSubmit={handleAddChannel} className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-4">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
             <Plus className="w-4 h-4 text-emerald-400" />
             <span>Add New Integration Channel</span>
           </h3>
@@ -156,7 +156,7 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
                 placeholder="e.g. #ops-alerts Discord"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:border-emerald-500 outline-none transition"
               />
             </div>
             <div>
@@ -164,7 +164,7 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as any)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:border-emerald-500 outline-none transition"
               >
                 <option value="discord">Discord Webhook</option>
                 <option value="slack">Slack Webhook</option>
@@ -183,7 +183,7 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
                 placeholder="https://discord.com/api/webhooks/..."
                 value={webhookUrl}
                 onChange={(e) => setWebhookUrl(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-cyan-400 outline-none"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-cyan-400 focus:border-emerald-500 outline-none transition"
               />
             </div>
           ) : (
@@ -196,7 +196,7 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
                   placeholder="123456:ABC-DEF..."
                   value={botToken}
                   onChange={(e) => setBotToken(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-cyan-400 outline-none"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-cyan-400 focus:border-emerald-500 outline-none transition"
                 />
               </div>
               <div>
@@ -207,7 +207,7 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
                   placeholder="-1001234567"
                   value={chatId}
                   onChange={(e) => setChatId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-cyan-400 outline-none"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-cyan-400 focus:border-emerald-500 outline-none transition"
                 />
               </div>
             </div>
@@ -217,7 +217,7 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow"
+              className="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-lg shadow-emerald-950/50 transition duration-150 active:scale-[0.96]"
             >
               {isSubmitting ? 'Saving...' : 'Add Integration'}
             </button>
@@ -227,7 +227,7 @@ export const ChannelsModal: React.FC<ChannelsModalProps> = ({ isOpen, onClose, p
         <div className="flex justify-end pt-2 border-t border-slate-800">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg"
+            className="px-4 py-2 text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl transition duration-150 active:scale-[0.96]"
           >
             Done
           </button>

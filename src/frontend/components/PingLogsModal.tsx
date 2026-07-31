@@ -119,7 +119,7 @@ export const PingLogsModal: React.FC<PingLogsModalProps> = ({ monitor, onClose }
         <div className="flex justify-end pt-2 border-t border-slate-800">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg"
+            className="px-4 py-2 text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl transition duration-150 active:scale-[0.96]"
           >
             Close
           </button>

@@ -50,7 +50,15 @@ export default function App() {
 
     const res = await fetch(url, { ...options, headers });
     if (res.status === 401) {
-      setIsAdminLoginOpen(true);
+      const cloned = res.clone();
+      const data = await cloned.json().catch(() => ({}));
+      if (data.needSetup) {
+        setNeedSetup(true);
+        setIsSetupWizardOpen(true);
+        setIsAdminLoginOpen(false);
+      } else {
+        setIsAdminLoginOpen(true);
+      }
     }
     return res;
   };
@@ -151,18 +159,18 @@ export default function App() {
         {/* Search & Action Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
           <div className="relative w-full md:w-80">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
             <input
               type="text"
               placeholder="Search checks by name or slug..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 outline-none transition"
+              className="w-full bg-slate-900/90 border border-slate-800/80 rounded-2xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-500/80 focus:ring-2 focus:ring-emerald-500/20 outline-none transition duration-150"
             />
           </div>
 
-          <div className="flex items-center space-x-2 text-xs text-slate-400">
-            <Cpu className="w-4 h-4 text-emerald-400" />
+          <div className="flex items-center space-x-2 text-xs text-slate-400 bg-slate-900/50 px-3 py-1.5 rounded-xl border border-slate-800/60">
+            <Cpu className="w-4 h-4 text-emerald-400 animate-pulse" />
             <span>Evaluating health every 60s via Cloudflare Cron Trigger</span>
           </div>
         </div>
@@ -174,10 +182,10 @@ export default function App() {
             <span>Loading health checks...</span>
           </div>
         ) : filteredMonitors.length === 0 ? (
-          <div className="glass-panel p-12 rounded-2xl text-center space-y-4 border border-slate-800">
+          <div className="glass-panel p-12 rounded-2xl text-center space-y-4 border border-slate-800/80 shadow-xl">
             <ShieldAlert className="w-12 h-12 text-slate-600 mx-auto" />
             <div>
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-bold text-white tracking-tight">
                 {needSetup ? 'D1 Database Not Initialized' : 'No Health Checks Found'}
               </h3>
               <p className="text-xs text-slate-400">
@@ -191,7 +199,7 @@ export default function App() {
             {needSetup ? (
               <button
                 onClick={() => setIsSetupWizardOpen(true)}
-                className="inline-flex items-center space-x-2 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-lg transition"
+                className="inline-flex items-center space-x-2 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-lg shadow-emerald-950/50 transition duration-150 active:scale-[0.96]"
               >
                 <Database className="w-4 h-4" />
                 <span>Launch Setup Wizard</span>
@@ -200,7 +208,7 @@ export default function App() {
               !searchQuery && (
                 <button
                   onClick={() => setIsAddModalOpen(true)}
-                  className="inline-flex items-center space-x-2 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow"
+                  className="inline-flex items-center space-x-2 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-lg shadow-emerald-950/50 transition duration-150 active:scale-[0.96]"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Create Check Now</span>
