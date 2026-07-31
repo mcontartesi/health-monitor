@@ -1,0 +1,190 @@
+import { Hono } from 'hono';
+import { Env } from '../db/types';
+import { DBClient } from '../db/client';
+import { NotifierService } from '../services/notifier';
+
+import { setupRouter } from './setup';
+
+export const apiRouter = new Hono<{ Bindings: Env }>();
+
+apiRouter.route('/setup', setupRouter);
+
+// Projects
+apiRouter.get('/projects', async (c) => {
+  const db = new DBClient(c.env);
+  const projects = await db.getProjects();
+  return c.json({ projects });
+});
+
+apiRouter.post('/projects', async (c) => {
+  const body = await c.req.json();
+  if (!body.name) return c.json({ error: 'Project name is required' }, 400);
+
+  const db = new DBClient(c.env);
+  const project = await db.createProject(body.name);
+  return c.json({ project });
+});
+
+// Monitors
+apiRouter.get('/monitors', async (c) => {
+  const projectId = c.req.query('project_id');
+  const db = new DBClient(c.env);
+
+  const setupStatus = await db.checkSetupStatus();
+  if (!setupStatus.initialized) {
+    return c.json(
+      {
+        monitors: [],
+        stats: { total: 0, up: 0, grace: 0, down: 0, paused: 0 },
+        needSetup: true,
+        message: 'D1 Database tables have not been created yet. Please run the setup wizard.',
+      },
+      200
+    );
+  }
+
+  const monitors = await db.getMonitors(projectId);
+
+  // Compute aggregate stats
+  const stats = {
+    total: monitors.length,
+    up: monitors.filter((m) => m.status === 'up').length,
+    grace: monitors.filter((m) => m.status === 'grace').length,
+    down: monitors.filter((m) => m.status === 'down').length,
+    paused: monitors.filter((m) => m.status === 'paused').length,
+  };
+
+  return c.json({ monitors, stats, needSetup: false });
+});
+
+apiRouter.post('/monitors', async (c) => {
+  const body = await c.req.json();
+  if (!body.name || !body.project_id) {
+    return c.json({ error: 'Name and project_id are required' }, 400);
+  }
+
+  const db = new DBClient(c.env);
+  const slug = body.slug || body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  try {
+    const monitor = await db.createMonitor({
+      project_id: body.project_id,
+      name: body.name,
+      slug,
+      description: body.description,
+      schedule_type: body.schedule_type || 'simple',
+      interval_seconds: Number(body.interval_seconds) || 3600,
+      cron_expression: body.cron_expression,
+      grace_seconds: Number(body.grace_seconds) || 900,
+    });
+    return c.json({ monitor }, 201);
+  } catch (err: any) {
+    return c.json({ error: err.message || 'Failed to create monitor' }, 400);
+  }
+});
+
+apiRouter.put('/monitors/:id', async (c) => {
+  const id = c.req.param('id');
+  const body = await c.req.json();
+  const db = new DBClient(c.env);
+
+  const updated = await db.updateMonitor(id, body);
+  if (!updated) return c.json({ error: 'Monitor update failed or not found' }, 404);
+
+  const monitor = await db.getMonitorBySlugOrId(id);
+  return c.json({ monitor });
+});
+
+apiRouter.post('/monitors/:id/pause', async (c) => {
+  const id = c.req.param('id');
+  const db = new DBClient(c.env);
+  const monitor = await db.getMonitorBySlugOrId(id);
+  if (!monitor) return c.json({ error: 'Monitor not found' }, 404);
+
+  const newStatus = monitor.status === 'paused' ? 'up' : 'paused';
+  await db.updateMonitor(id, { status: newStatus });
+
+  return c.json({ success: true, status: newStatus });
+});
+
+apiRouter.post('/monitors/:id/ping', async (c) => {
+  const id = c.req.param('id');
+  const db = new DBClient(c.env);
+  const monitor = await db.getMonitorBySlugOrId(id);
+  if (!monitor) return c.json({ error: 'Monitor not found' }, 404);
+
+  const { monitor: updatedMonitor } = await db.recordPing(monitor, 'success', {
+    user_agent: 'Health Monitor Web Dashboard Test Ping',
+    duration_ms: 42,
+  });
+
+  return c.json({ success: true, monitor: updatedMonitor });
+});
+
+apiRouter.delete('/monitors/:id', async (c) => {
+  const id = c.req.param('id');
+  const db = new DBClient(c.env);
+  const deleted = await db.deleteMonitor(id);
+  return c.json({ success: deleted });
+});
+
+// Logs
+apiRouter.get('/monitors/:id/logs', async (c) => {
+  const id = c.req.param('id');
+  const db = new DBClient(c.env);
+  const logs = await db.getPingLogs(id, 100);
+  return c.json({ logs });
+});
+
+// Alert Channels
+apiRouter.get('/channels', async (c) => {
+  const projectId = c.req.query('project_id') || 'proj_default';
+  const db = new DBClient(c.env);
+  const channels = await db.getChannels(projectId);
+  return c.json({ channels });
+});
+
+apiRouter.post('/channels', async (c) => {
+  const body = await c.req.json();
+  if (!body.name || !body.type || !body.config_json) {
+    return c.json({ error: 'Missing channel configuration' }, 400);
+  }
+
+  const db = new DBClient(c.env);
+  const channel = await db.createChannel({
+    project_id: body.project_id || 'proj_default',
+    name: body.name,
+    type: body.type,
+    config_json: typeof body.config_json === 'string' ? body.config_json : JSON.stringify(body.config_json),
+  });
+
+  return c.json({ channel }, 201);
+});
+
+apiRouter.delete('/channels/:id', async (c) => {
+  const id = c.req.param('id');
+  const db = new DBClient(c.env);
+  const success = await db.deleteChannel(id);
+  return c.json({ success });
+});
+
+apiRouter.post('/channels/:id/test', async (c) => {
+  const id = c.req.param('id');
+  const db = new DBClient(c.env);
+  const channels = await db.getChannels('proj_default');
+  const channel = channels.find((ch) => ch.id === id);
+
+  if (!channel) return c.json({ error: 'Channel not found' }, 404);
+
+  const mockMonitor: any = {
+    id: 'chk_test',
+    project_id: 'proj_default',
+    name: 'Sample Test Alert Check',
+    slug: 'test-check',
+    status: 'down',
+    last_ping_at: new Date().toISOString(),
+  };
+
+  await NotifierService.notifyStatusChange(mockMonitor, [channel], 'up', 'down');
+  return c.json({ success: true, message: `Test notification sent via ${channel.name}` });
+});

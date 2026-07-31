@@ -1,0 +1,9 @@
+# Local secrets template for Wrangler (.dev.vars)
+# Copy this file to .dev.vars for local testing.
+# DO NOT COMMIT .dev.vars TO GIT!
+
+# Example API Secret Key (if using custom secret authentication)
+# API_SECRET="your-local-dev-secret-key"
+
+# Example Webhook Signing Secret
+# WEBHOOK_SIGNING_SECRET="your-local-webhook-signing-secret"
