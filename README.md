@@ -28,6 +28,14 @@ Deploy **Health Monitor** directly to your Cloudflare account in seconds — **z
 
 ---
 
+## The Story Behind Health Monitor
+
+📖 Read the full article on Medium: **[How a Silent Cron Job Ruined My Weekend (And Why I Built a $0 Open Source Alternative on Cloudflare)](https://medium.com/@maxiconta/how-a-silent-cron-job-ruined-my-weekend-and-why-i-built-a-0-open-source-alternative-on-a57173e25db3)**
+
+> **Summary**: After a silent cron job failure disrupted a weekend and revealed the heavy infrastructure requirements of self-hosted alternatives, Health Monitor was created as a lightweight, 100% serverless, zero-maintenance solution running entirely on Cloudflare's free tier.
+
+---
+
 ## Why Health Monitor?
 
 Traditional cron monitoring services require running background worker servers, Redis caches, PostgreSQL instances, and celery queues.  
