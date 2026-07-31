@@ -13,7 +13,76 @@ import { Footer } from './components/Footer';
 import { Search, ShieldAlert, Plus, RefreshCw, Cpu, Database, Lock } from 'lucide-react';
 import { Monitor } from '../worker/db/types';
 
+import { DemoBanner } from './components/DemoBanner';
 import { useWebSocket, RealtimeEvent } from './hooks/useWebSocket';
+
+const isGitHubPages = typeof window !== 'undefined' && (
+  window.location.hostname.includes('github.io') ||
+  window.location.pathname.includes('/health-monitor/')
+);
+
+const MOCK_DEMO_MONITORS: Monitor[] = [
+  {
+    id: 'demo_1',
+    project_id: 'proj_default',
+    name: 'Primary API Gateway (Muestra)',
+    slug: 'api-gateway',
+    status: 'up',
+    period_seconds: 300,
+    grace_seconds: 60,
+    created_at: new Date(Date.now() - 86400000 * 30).toISOString(),
+    last_ping_at: new Date(Date.now() - 120000).toISOString(),
+    next_expected_at: new Date(Date.now() + 180000).toISOString(),
+  },
+  {
+    id: 'demo_2',
+    project_id: 'proj_default',
+    name: 'Nightly DB Backup Cron (Muestra)',
+    slug: 'db-backup-cron',
+    status: 'up',
+    period_seconds: 86400,
+    grace_seconds: 3600,
+    created_at: new Date(Date.now() - 86400000 * 60).toISOString(),
+    last_ping_at: new Date(Date.now() - 3600000 * 4).toISOString(),
+    next_expected_at: new Date(Date.now() + 3600000 * 20).toISOString(),
+  },
+  {
+    id: 'demo_3',
+    project_id: 'proj_default',
+    name: 'Staging Payment Webhook (Muestra)',
+    slug: 'payment-webhook',
+    status: 'grace',
+    period_seconds: 600,
+    grace_seconds: 120,
+    created_at: new Date(Date.now() - 86400000 * 15).toISOString(),
+    last_ping_at: new Date(Date.now() - 650000).toISOString(),
+    next_expected_at: new Date(Date.now() - 50000).toISOString(),
+  },
+  {
+    id: 'demo_4',
+    project_id: 'proj_default',
+    name: 'Redis Cache Sync Worker (Muestra)',
+    slug: 'redis-sync',
+    status: 'down',
+    period_seconds: 60,
+    grace_seconds: 15,
+    created_at: new Date(Date.now() - 86400000 * 10).toISOString(),
+    last_ping_at: new Date(Date.now() - 3600000 * 2).toISOString(),
+    next_expected_at: new Date(Date.now() - 3600000 * 2 + 75000).toISOString(),
+  },
+  {
+    id: 'demo_5',
+    project_id: 'proj_default',
+    name: 'User Email Notification Queue (Muestra)',
+    slug: 'email-queue',
+    status: 'paused',
+    period_seconds: 300,
+    grace_seconds: 60,
+    created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
+    last_ping_at: null,
+    next_expected_at: null,
+  },
+];
 
 export default function App() {
   const [monitors, setMonitors] = useState<Monitor[]>([]);
@@ -116,6 +185,7 @@ export default function App() {
     setIsRefreshing(true);
     try {
       const res = await authFetch(`/api/monitors?project_id=${projectId}`);
+      if (!res.ok) throw new Error('API unavailable');
       const data: any = await res.json();
 
       if (data.needSetup) {
@@ -128,7 +198,17 @@ export default function App() {
       setMonitors(data.monitors || []);
       setStats(data.stats || { total: 0, up: 0, grace: 0, down: 0, paused: 0 });
     } catch (err) {
-      console.error('Failed to fetch monitors', err);
+      console.log('GitHub Pages / Demo Mode fallback:', err);
+      // Load interactive sample monitors for GitHub Pages
+      setMonitors((prev) => prev.length > 0 ? prev : MOCK_DEMO_MONITORS);
+      const activeList = monitors.length > 0 ? monitors : MOCK_DEMO_MONITORS;
+      setStats({
+        total: activeList.length,
+        up: activeList.filter(m => m.status === 'up').length,
+        grace: activeList.filter(m => m.status === 'grace').length,
+        down: activeList.filter(m => m.status === 'down').length,
+        paused: activeList.filter(m => m.status === 'paused').length,
+      });
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -193,6 +273,9 @@ export default function App() {
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-6 flex-1 w-full pb-16">
         
+        {/* GitHub Pages Interactive Demo Banner & 1-Click Deploy */}
+        {isGitHubPages && <DemoBanner />}
+
         {/* Top Stats Overview */}
         <StatsOverview
           stats={stats}
