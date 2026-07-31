@@ -262,6 +262,7 @@ We believe in open, transparent, and collaborative software development.
 
 Created and maintained with ❤️ by **[Maximiliano Contartesi](https://github.com/mcontartesi)**.
 
+- 💼 **LinkedIn**: [maxiconta](https://www.linkedin.com/in/maxiconta/)
 - 🐙 **GitHub**: [@mcontartesi](https://github.com/mcontartesi)
 - 📝 **Medium**: [@maxiconta](https://medium.com/@maxiconta)
 - 📄 **Story**: Read [How a Silent Cron Job Ruined My Weekend](https://medium.com/@maxiconta/how-a-silent-cron-job-ruined-my-weekend-and-why-i-built-a-0-open-source-alternative-on-a57173e25db3)
