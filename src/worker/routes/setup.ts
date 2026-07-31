@@ -19,6 +19,7 @@ setupRouter.get('/status', async (c) => {
 setupRouter.post('/init', async (c) => {
   try {
     const body = await c.req.json().catch(() => ({}));
+    const withSampleData = body.withSampleData !== false;
     const username = (body.username || '').trim();
     const password = (body.password || '').trim();
 
