@@ -39,7 +39,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["RealtimeBroadcaster"]
+      "new_sqlite_classes": ["RealtimeBroadcaster"]
     }
   ]
 }
