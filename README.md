@@ -6,6 +6,7 @@
 ---
 
 ![Health Monitor Status](https://img.shields.io/badge/Health_Monitor-Cloudflare_Native-10b981?style=for-the-badge&logo=cloudflare)
+[![Version](https://img.shields.io/github/v/release/mcontartesi/health-monitor?style=for-the-badge&color=blue)](https://github.com/mcontartesi/health-monitor/releases)
 [![Tests Status](https://img.shields.io/badge/Tests-Passing-10b981?style=for-the-badge&logo=vitest)](https://github.com/mcontartesi/health-monitor/actions/workflows/test.yml)
 [![Coverage Status](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge&logo=codecov)](https://github.com/mcontartesi/health-monitor/actions/workflows/test.yml)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
@@ -34,11 +35,12 @@ Traditional cron monitoring services require running background worker servers, 
 - 📊 **D1 Relational Storage**: Serverless SQLite database at the edge storing monitors, audit logs, and alert configurations.
 - 🎨 **Modern Dark UI**: React + Tailwind CSS dashboard hosted on Cloudflare Workers Static Assets (`assets`).
 - 🔔 **Multi-Channel Alerting**: Instant notifications via **Discord**, **Slack**, **Telegram**, and **Custom Webhooks** when checks fail or recover.
+- 🧙 **HTTP Setup Wizard**: Automatic first-time web wizard to initialize database tables and admin credentials with zero CLI hassle.
 - 🏷️ **Dynamic SVG Badges**: Embed real-time status badges in your GitHub READMEs (`/badge/:slug/status.svg`).
 
 ---
 
-## 🚀 Quick Start & Deployment
+## 🚀 Quick Start & Local Development
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) v18 or newer
@@ -47,7 +49,7 @@ Traditional cron monitoring services require running background worker servers, 
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/your-username/health-monitor.git
+git clone https://github.com/mcontartesi/health-monitor.git
 cd health-monitor
 npm install
 ```
@@ -81,26 +83,17 @@ Copy the returned `database_id` and KV `id` into `wrangler.jsonc`:
 ]
 ```
 
-### 3. Initialize Database Schema
-Execute the SQL schema to create tables and default project:
-
-```bash
-# For local development
-npm run db:setup:local
-
-# For production deployment
-npm run db:setup
-```
-
-### 4. Run Locally
+### 3. Run Locally & Setup Wizard
 Start local development server (Vite + Cloudflare Worker local preview):
 
 ```bash
 npm run dev
 ```
-Open `http://localhost:3000` in your browser.
 
-### 5. Deploy to Cloudflare
+1. Open `http://localhost:3000` in your browser.
+2. The interactive **Setup Wizard** will automatically launch to create tables and set your admin credentials.
+
+### 4. Deploy to Cloudflare
 Deploy the worker backend, cron trigger, and compiled static React frontend in a single command:
 
 ```bash
@@ -156,6 +149,23 @@ Embed real-time status badges into your project READMEs:
 
 ---
 
+## 🔑 Admin Password Authentication
+
+Health Monitor includes **built-in Admin Password protection** out-of-the-box:
+
+- **Default Credentials**: Username `admin`, Password `admin` (configured via Setup Wizard on initial launch).
+- **Automatic Challenge**: Unauthenticated API requests receive HTTP 401 and trigger a modern Admin Login modal in the dashboard.
+- **Custom Production Password**: Set your custom production password securely via Wrangler CLI:
+  ```bash
+  npx wrangler secret put ADMIN_PASSWORD
+  ```
+- **Custom Production Username**: Optionally override default username:
+  ```bash
+  npx wrangler secret put ADMIN_USERNAME
+  ```
+
+---
+
 ## 🔐 Zero Trust & Cloudflare Access Authentication
 
 Health Monitor supports **Cloudflare Access (Cloudflare One)** out-of-the-box for Zero Trust authentication **without breaking 1-Click Deployment simplicity**:
@@ -168,23 +178,6 @@ Health Monitor supports **Cloudflare Access (Cloudflare One)** out-of-the-box fo
    - Configure Single Sign-On (GitHub, Google, Azure AD, Okta, or Email OTP).
    - Exclude `/ping/*` and `/badge/*` routes from Access policies so external cron scripts can ping without credentials.
 3. **Automatic User Identity**: Health Monitor detects authenticated user sessions (`Cf-Access-Authenticated-User-Email`) and displays an active Zero Trust identity badge in the UI header.
-
----
-
-## 🔑 Admin Password Authentication (Fallback Protection)
-
-If you deploy **Health Monitor** without Cloudflare Access/Zero Trust, the application includes **built-in Admin Password protection**:
-
-- **Default Credentials**: Username `admin`, Password `admin`.
-- **Automatic Challenge**: Unauthenticated API requests receive HTTP 401 and trigger a modern Admin Login modal in the dashboard.
-- **Custom Admin Password**: Set your custom production password securely via Wrangler CLI:
-  ```bash
-  npx wrangler secret put ADMIN_PASSWORD
-  ```
-- **Custom Admin Username**: Optionally override default username:
-  ```bash
-  npx wrangler secret put ADMIN_USERNAME
-  ```
 
 ---
 
@@ -210,15 +203,41 @@ For complete technical specifications, see [docs/ARCHITECTURE.md](docs/ARCHITECT
 
 ---
 
+## ❓ Troubleshooting & FAQ
+
+<details>
+<summary><b>Q: D1_ERROR: no such table: monitors?</b></summary>
+<br />
+Run the setup wizard by opening the web app in your browser, or execute local schema manually:
+<code>npm run db:setup:local</code>
+</details>
+
+<details>
+<summary><b>Q: How do external ping endpoints stay public when auth is enabled?</b></summary>
+<br />
+All <code>/ping/*</code> and <code>/badge/*</code> routes are handled on dedicated public routers outside the administrative API middleware, ensuring ping ingestion and badge rendering remain 100% public, unauthenticated, and ultra-fast (&lt;20ms).
+</details>
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Follow these steps to contribute:
+
+1. **Fork the repository** on GitHub.
+2. **Create a feature branch**: `git checkout -b feature/my-cool-feature`
+3. **Run unit tests**: `npm test`
+4. **Build & verify**: `npm run build`
+5. **Open a Pull Request**.
+
+---
+
 ## 👨‍💻 Author & Maintainer
 
-Designed and developed by **Maximiliano Contartesi**:
-- 💼 **LinkedIn**: [Maximiliano Contartesi](https://www.linkedin.com/in/maxiconta/)
-- ✉️ **Email**: [maxiconta@gmail.com](mailto:maxiconta@gmail.com)
+Designed and developed by **[Maximiliano Contartesi](https://github.com/mcontartesi)**.
 
 ---
 
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
-
