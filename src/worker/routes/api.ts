@@ -96,8 +96,8 @@ apiRouter.get('/user', async (c) => {
 
 apiRouter.post('/auth/login', async (c) => {
   try {
-    const body = await c.req.json();
-    const username = (body.username || '').trim();
+    const body = await c.req.json().catch(() => ({}));
+    const username = (body.username || 'admin').trim();
     const password = (body.password || '').trim();
 
     const creds = await getEffectiveAdminCredentials(c);

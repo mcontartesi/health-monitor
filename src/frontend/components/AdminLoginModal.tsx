@@ -69,25 +69,17 @@ export function AdminLoginModal({ isOpen, onSuccess }: AdminLoginModalProps) {
             </div>
           )}
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-slate-400" />
-              <span>Username</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="admin"
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 outline-none transition"
-            />
+          <div className="flex items-center justify-between p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs">
+            <span className="text-slate-400">Target Account</span>
+            <span className="font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+              admin
+            </span>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
               <KeyRound className="w-3.5 h-3.5 text-slate-400" />
-              <span>Password</span>
+              <span>Admin Password</span>
             </label>
             <input
               type="password"
@@ -98,7 +90,7 @@ export function AdminLoginModal({ isOpen, onSuccess }: AdminLoginModalProps) {
               className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 outline-none transition"
             />
             <p className="text-[11px] text-slate-500 pt-1">
-              Enter credentials configured during initial setup, or set via <code className="text-slate-400 font-mono">ADMIN_PASSWORD</code> secret.
+              Enter password created during initial setup, or set via <code className="text-slate-400 font-mono">ADMIN_PASSWORD</code> secret.
             </p>
           </div>
 
