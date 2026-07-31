@@ -8,6 +8,7 @@ import { PingLogsModal } from './components/PingLogsModal';
 import { ChannelsModal } from './components/ChannelsModal';
 import { SetupWizardModal } from './components/SetupWizardModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
+import { SettingsModal } from './components/SettingsModal';
 import { Footer } from './components/Footer';
 import { Search, ShieldAlert, Plus, RefreshCw, Cpu, Database, Lock } from 'lucide-react';
 import { Monitor } from '../worker/db/types';
@@ -21,13 +22,14 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [needSetup, setNeedSetup] = useState(false);
-  const [userInfo, setUserInfo] = useState<{ authenticated: boolean; email?: string }>({ authenticated: false });
+  const [userInfo, setUserInfo] = useState<{ authenticated: boolean; email?: string; provider?: string }>({ authenticated: false });
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isChannelsModalOpen, setIsChannelsModalOpen] = useState(false);
   const [isSetupWizardOpen, setIsSetupWizardOpen] = useState(false);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [selectedSnippetMonitor, setSelectedSnippetMonitor] = useState<Monitor | null>(null);
   const [selectedLogsMonitor, setSelectedLogsMonitor] = useState<Monitor | null>(null);
 
@@ -124,6 +126,12 @@ export default function App() {
     fetchMonitors();
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('health_monitor_token');
+    setUserInfo({ authenticated: false });
+    setIsAdminLoginOpen(true);
+  };
+
   // Filter monitors based on search and status tabs
   const filteredMonitors = monitors.filter((m) => {
     const matchesSearch =
@@ -140,7 +148,7 @@ export default function App() {
       <Navbar
         onOpenAddMonitor={() => setIsAddModalOpen(true)}
         onOpenChannels={() => setIsChannelsModalOpen(true)}
-        onOpenSetupWizard={() => setIsSetupWizardOpen(true)}
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
         onRefresh={() => fetchMonitors()}
         isRefreshing={isRefreshing}
         userInfo={userInfo}
@@ -238,6 +246,15 @@ export default function App() {
       <Footer />
 
       {/* Modals */}
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        onOpenSetupWizard={() => setIsSetupWizardOpen(true)}
+        onOpenChannels={() => setIsChannelsModalOpen(true)}
+        onLogout={handleLogout}
+        userInfo={userInfo}
+      />
+
       <AdminLoginModal
         isOpen={isAdminLoginOpen}
         onSuccess={() => {
