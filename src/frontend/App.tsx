@@ -150,6 +150,7 @@ export default function App() {
         onOpenChannels={() => setIsChannelsModalOpen(true)}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
         onRefresh={() => fetchMonitors()}
+        onLogout={handleLogout}
         isRefreshing={isRefreshing}
         userInfo={userInfo}
       />

@@ -1,13 +1,14 @@
-import React from 'react';
-import { Activity, Plus, Bell, RefreshCw, Cloud, Settings, ExternalLink, ShieldCheck } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Activity, Plus, Bell, RefreshCw, Cloud, Settings, ExternalLink, ShieldCheck, User, LogOut, ChevronDown } from 'lucide-react';
 
 interface NavbarProps {
   onOpenAddMonitor: () => void;
   onOpenChannels: () => void;
   onOpenSettings: () => void;
   onRefresh: () => void;
+  onLogout: () => void;
   isRefreshing: boolean;
-  userInfo?: { authenticated: boolean; email?: string };
+  userInfo?: { authenticated: boolean; email?: string; provider?: string };
 }
 
 const GithubIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
@@ -21,79 +22,73 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenChannels,
   onOpenSettings,
   onRefresh,
+  onLogout,
   isRefreshing,
   userInfo,
 }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const userEmail = userInfo?.email || 'admin@local';
+
   return (
     <header className="sticky top-0 z-40 glass-panel border-b border-slate-800/80 px-6 py-3.5 mb-8 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        {/* Logo & Title */}
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+        
+        {/* Brand & Logo */}
         <div className="flex items-center space-x-3.5">
           <div className="bg-emerald-500/10 p-2.5 rounded-2xl border border-emerald-500/30 text-emerald-400 shadow-lg shadow-emerald-500/10">
-            <Activity className="w-6 h-6 animate-pulse" />
+            <Activity className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center space-x-2.5">
-              <h1 className="text-xl font-bold text-white tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">Health Monitor</h1>
-              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm">
+              <h1 className="text-lg font-bold text-white tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+                Health Monitor
+              </h1>
+              <span className="hidden sm:inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm">
                 <Cloud className="w-3 h-3" />
                 <span>Cloudflare Native</span>
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-normal">Serverless Cron Job & Uptime Switch</p>
+            <p className="text-[11px] text-slate-400 font-normal hidden sm:block">Serverless Cron Job & Uptime Switch</p>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center space-x-2">
-          {/* Cloudflare Access Identity Badge */}
-          {userInfo?.authenticated && userInfo.email ? (
-            <div className="hidden lg:flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="max-w-[150px] truncate">{userInfo.email}</span>
-            </div>
-          ) : null}
-
-          {/* Cloudflare Deploy Button */}
-          <a
-            href="https://deploy.workers.cloudflare.com/?url=https://github.com/mcontartesi/health-monitor"
-            target="_blank"
-            rel="noreferrer"
-            className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-2 text-xs font-semibold text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 rounded-xl transition duration-150 active:scale-[0.96]"
-            title="Deploy to Cloudflare Workers with 1-Click"
-          >
-            <Cloud className="w-3.5 h-3.5" />
-            <span>Deploy to CF</span>
-            <ExternalLink className="w-3 h-3 opacity-60" />
-          </a>
-
-          {/* Settings Menu Button */}
-          <button
-            onClick={onOpenSettings}
-            className="flex items-center space-x-1.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white bg-slate-800/70 hover:bg-slate-800 border border-slate-700/80 rounded-xl transition duration-150 active:scale-[0.96]"
-            title="Application Settings"
-          >
-            <Settings className="w-3.5 h-3.5 text-slate-400" />
-            <span className="hidden sm:inline">Settings</span>
-          </button>
-
+        {/* Essential Action Bar */}
+        <div className="flex items-center space-x-2.5">
+          
+          {/* Refresh Button */}
           <button
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="p-2 text-slate-400 hover:text-white bg-slate-800/70 hover:bg-slate-800 rounded-xl border border-slate-700/80 transition duration-150 active:scale-[0.96]"
-            title="Refresh status"
+            className="p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 rounded-xl border border-slate-700/70 transition duration-150 active:scale-[0.96]"
+            title="Refresh monitor status"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-emerald-400' : ''}`} />
           </button>
 
+          {/* Alerts Button */}
           <button
             onClick={onOpenChannels}
-            className="flex items-center space-x-2 px-3.5 py-2 text-xs font-medium text-slate-300 hover:text-white bg-slate-800/70 hover:bg-slate-800 border border-slate-700/80 rounded-xl transition duration-150 active:scale-[0.96]"
+            className="flex items-center space-x-1.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-800 border border-slate-700/70 rounded-xl transition duration-150 active:scale-[0.96]"
+            title="Manage alert notification channels"
           >
-            <Bell className="w-4 h-4 text-amber-400" />
-            <span>Alerts</span>
+            <Bell className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline">Alerts</span>
           </button>
 
+          {/* Primary Action: New Check */}
           <button
             onClick={onOpenAddMonitor}
             className="flex items-center space-x-2 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-lg shadow-emerald-900/40 border border-emerald-400/30 transition duration-150 active:scale-[0.96]"
@@ -102,14 +97,95 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>New Check</span>
           </button>
 
-          <a
-            href="https://github.com/mcontartesi/health-monitor"
-            target="_blank"
-            rel="noreferrer"
-            className="p-2 text-slate-400 hover:text-white bg-slate-800/70 hover:bg-slate-800 rounded-xl border border-slate-700/80 transition duration-150 active:scale-[0.96]"
-          >
-            <GithubIcon className="w-4 h-4" />
-          </a>
+          {/* User Profile & Action Dropdown Menu */}
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="flex items-center space-x-2 pl-2.5 pr-2 py-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl transition duration-150 active:scale-[0.96] text-xs"
+            >
+              <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold font-mono text-[11px]">
+                {userEmail.charAt(0).toUpperCase()}
+              </div>
+              <span className="max-w-[100px] truncate text-slate-200 font-medium hidden md:inline">
+                {userEmail}
+              </span>
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Dropdown Card */}
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-[#0f172a] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden py-1 z-50 text-xs animate-fade-in">
+                
+                {/* Account Details Header */}
+                <div className="px-3.5 py-2.5 border-b border-slate-800 bg-slate-900/60">
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Signed in as</span>
+                  <span className="font-semibold text-white font-mono truncate block mt-0.5">{userEmail}</span>
+                  <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 mt-1">
+                    <ShieldCheck className="w-3 h-3" />
+                    <span>{userInfo?.provider || 'Admin Authenticated'}</span>
+                  </span>
+                </div>
+
+                {/* Menu Items */}
+                <div className="py-1">
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      onOpenSettings();
+                    }}
+                    className="w-full px-3.5 py-2 text-left text-slate-300 hover:text-white hover:bg-slate-800/80 flex items-center space-x-2 transition"
+                  >
+                    <Settings className="w-4 h-4 text-slate-400" />
+                    <span>Settings & Maintenance</span>
+                  </button>
+
+                  <a
+                    href="https://deploy.workers.cloudflare.com/?url=https://github.com/mcontartesi/health-monitor"
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full px-3.5 py-2 text-left text-slate-300 hover:text-white hover:bg-slate-800/80 flex items-center justify-between transition"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Cloud className="w-4 h-4 text-orange-400" />
+                      <span>Deploy to Cloudflare</span>
+                    </div>
+                    <ExternalLink className="w-3 h-3 text-slate-500" />
+                  </a>
+
+                  <a
+                    href="https://github.com/mcontartesi/health-monitor"
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full px-3.5 py-2 text-left text-slate-300 hover:text-white hover:bg-slate-800/80 flex items-center justify-between transition"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <GithubIcon className="w-4 h-4 text-slate-400" />
+                      <span>GitHub Repository</span>
+                    </div>
+                    <ExternalLink className="w-3 h-3 text-slate-500" />
+                  </a>
+                </div>
+
+                {/* Sign Out Action */}
+                <div className="pt-1 border-t border-slate-800/80">
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      onLogout();
+                    }}
+                    className="w-full px-3.5 py-2 text-left text-rose-400 hover:bg-rose-500/10 flex items-center space-x-2 transition font-semibold"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign Out / Lock</span>
+                  </button>
+                </div>
+
+              </div>
+            )}
+          </div>
+
         </div>
       </div>
     </header>
