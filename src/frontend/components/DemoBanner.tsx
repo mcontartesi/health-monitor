@@ -1,7 +1,33 @@
-import React from 'react';
-import { Rocket, ExternalLink, Info, Sparkles, ShieldCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { Rocket, ExternalLink, Info, Sparkles, ShieldCheck, Globe } from 'lucide-react';
+
+const TRANSLATIONS = {
+  en: {
+    badgeDemo: 'Interactive Demo • Live Preview',
+    badgeSamples: 'Sample Data Included',
+    title: 'This site is an interactive demo preview of ',
+    titleAccent: 'Health Monitor',
+    description: 'The heartbeat checks and audit logs displayed below are interactive sample data for testing the dashboard. To monitor your own cron jobs, services, and webhooks in production 100% free, deploy your own private instance in 1 click.',
+    deployTag: 'Instant Deployment',
+    deployBtn: '1-Click Deploy to Cloudflare',
+    githubBtn: 'View Source on GitHub',
+  },
+  es: {
+    badgeDemo: 'Demostración Interactiva • Muestra en Vivo',
+    badgeSamples: 'Datos de Muestra Incluidos',
+    title: 'Esta web es una versión demo interactiva de ',
+    titleAccent: 'Health Monitor',
+    description: 'Los monitores y registros que ves abajo son datos de prueba interactivos para explorar el panel en vivo. Para monitorear tus propios cron jobs, servicios y webhooks en producción de forma 100% gratuita, despliega tu propia instancia privada con 1 solo clic.',
+    deployTag: 'Despliegue Inmediato',
+    deployBtn: '1-Click Deploy to Cloudflare',
+    githubBtn: 'Ver código fuente en GitHub',
+  },
+};
 
 export const DemoBanner: React.FC = () => {
+  const [lang, setLang] = useState<'en' | 'es'>('en');
+  const t = TRANSLATIONS[lang];
+
   return (
     <div className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-slate-900/90 to-emerald-950/40 p-6 md:p-8 mb-8 shadow-2xl backdrop-blur-xl">
       {/* Background Decorative Glow Effect */}
@@ -10,27 +36,54 @@ export const DemoBanner: React.FC = () => {
 
       <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         
-        {/* Left Side: Notice & Description */}
+        {/* Left Side: Notice, Language Toggle & Description */}
         <div className="space-y-3 max-w-3xl">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase tracking-wider animate-pulse">
               <Info className="w-3.5 h-3.5" />
-              <span>Demostración Interactiva • Interactive Demo</span>
+              <span>{t.badgeDemo}</span>
             </span>
 
             <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Datos de Muestra Incluidos</span>
+              <span>{t.badgeSamples}</span>
             </span>
+
+            {/* Language Switcher Toggle */}
+            <div className="inline-flex items-center bg-slate-900/90 border border-slate-700/80 rounded-full p-0.5 text-xs ml-auto sm:ml-2">
+              <Globe className="w-3.5 h-3.5 text-slate-400 ml-2 mr-1" />
+              <button
+                onClick={() => setLang('en')}
+                className={`px-2 py-0.5 rounded-full font-bold transition duration-150 ${
+                  lang === 'en'
+                    ? 'bg-emerald-500 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLang('es')}
+                className={`px-2 py-0.5 rounded-full font-bold transition duration-150 ${
+                  lang === 'es'
+                    ? 'bg-emerald-500 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                ES
+              </button>
+            </div>
           </div>
 
           <h2 className="text-xl md:text-2xl font-extrabold text-white tracking-tight leading-tight">
-            Esta web es solo una <span className="bg-gradient-to-r from-amber-400 via-emerald-300 to-teal-300 bg-clip-text text-transparent">muestra / versión demo</span> de Health Monitor
+            {t.title}
+            <span className="bg-gradient-to-r from-amber-400 via-emerald-300 to-teal-300 bg-clip-text text-transparent">
+              {t.titleAccent}
+            </span>
           </h2>
 
           <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-            Los monitores y registros que ves abajo son <strong className="text-white">datos de prueba interactivos</strong> para explorar el panel en vivo. 
-            Para monitorear tus propios cron jobs, servicios y webhooks en producción de forma 100% gratuita, despliega tu propia instancia privada con 1 solo clic.
+            {t.description}
           </p>
         </div>
 
@@ -44,8 +97,8 @@ export const DemoBanner: React.FC = () => {
           >
             <Rocket className="w-5 h-5 text-white group-hover:rotate-12 transition-transform duration-300" />
             <div className="text-left">
-              <span className="block text-[10px] text-emerald-100 uppercase tracking-widest font-extrabold">Despliegue Inmediato</span>
-              <span className="block text-sm font-black tracking-wide">1-Click Deploy to Cloudflare</span>
+              <span className="block text-[10px] text-emerald-100 uppercase tracking-widest font-extrabold">{t.deployTag}</span>
+              <span className="block text-sm font-black tracking-wide">{t.deployBtn}</span>
             </div>
             <ExternalLink className="w-4 h-4 text-emerald-200 group-hover:translate-x-1 transition-transform" />
           </a>
@@ -57,7 +110,7 @@ export const DemoBanner: React.FC = () => {
             className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-900/80 hover:bg-slate-800/90 rounded-xl border border-slate-700/80 transition duration-150 text-center"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Ver código fuente en GitHub</span>
+            <span>{t.githubBtn}</span>
           </a>
         </div>
 
