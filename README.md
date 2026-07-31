@@ -14,13 +14,17 @@
 
 ---
 
-## ⚡ 1-Click Deployment
+## ⚡ 1-Click Deployment (Recommended)
 
-Deploy **Health Monitor** directly to your Cloudflare account with a single click:
+Deploy **Health Monitor** directly to your Cloudflare account in seconds — **zero CLI commands required**:
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/mcontartesi/health-monitor)
 
-*The Cloudflare Workers Deploy Button will automatically fork the repository, connect your GitHub account, configure your Worker, and launch the deployment pipeline.*
+### 3-Step Instant Setup:
+1. Click the **Deploy to Cloudflare Workers** button above.
+2. Cloudflare will automatically fork the repository, provision Cloudflare D1 & KV bindings, and deploy your Worker.
+3. Open your generated Worker URL (`https://health-monitor.your-subdomain.workers.dev`) in any browser.  
+   👉 The interactive **Setup Wizard** will launch automatically on your first visit to create database tables and set your custom **Admin Username & Password**!
 
 ---
 
@@ -40,7 +44,9 @@ Traditional cron monitoring services require running background worker servers, 
 
 ---
 
-## 🚀 Quick Start & Local Development
+## 💻 Local Development & CLI Setup (Optional)
+
+If you prefer running or customizing Health Monitor locally:
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) v18 or newer
@@ -54,36 +60,7 @@ cd health-monitor
 npm install
 ```
 
-### 2. Create Cloudflare D1 Database & KV Namespace
-Run Wrangler commands to create your serverless database and key-value cache:
-
-```bash
-# Create D1 database
-npx wrangler d1 create health_monitor_db
-
-# Create KV namespace
-npx wrangler kv:namespace create HEALTH_MONITOR_KV
-```
-
-Copy the returned `database_id` and KV `id` into `wrangler.jsonc`:
-
-```jsonc
-"d1_databases": [
-  {
-    "binding": "DB",
-    "database_name": "health_monitor_db",
-    "database_id": "YOUR_D1_DATABASE_ID"
-  }
-],
-"kv_namespaces": [
-  {
-    "binding": "KV",
-    "id": "YOUR_KV_NAMESPACE_ID"
-  }
-]
-```
-
-### 3. Run Locally & Setup Wizard
+### 2. Run Local Preview
 Start local development server (Vite + Cloudflare Worker local preview):
 
 ```bash
@@ -91,10 +68,10 @@ npm run dev
 ```
 
 1. Open `http://localhost:3000` in your browser.
-2. The interactive **Setup Wizard** will automatically launch to create tables and set your admin credentials.
+2. The interactive **Setup Wizard** will automatically launch to create local tables and set your admin credentials.
 
-### 4. Deploy to Cloudflare
-Deploy the worker backend, cron trigger, and compiled static React frontend in a single command:
+### 3. Deploy via Wrangler CLI
+Deploy the worker backend, cron trigger, and compiled static React frontend:
 
 ```bash
 npm run deploy
