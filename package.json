@@ -28,7 +28,7 @@
   "author": "Health Monitor Open Source Community",
   "license": "MIT",
   "dependencies": {
-    "hono": "^4.6.0",
+    "hono": "^4.12.34",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
