@@ -28,23 +28,23 @@
   "author": "Health Monitor Open Source Community",
   "license": "MIT",
   "dependencies": {
-    "hono": "^4.6.0",
+    "hono": "^4.13.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260731.1",
+    "@cloudflare/workers-types": "^5.20260815.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.5",
     "autoprefixer": "^10.4.20",
-    "lucide-react": "^1.28.0",
-    "postcss": "^8.4.47",
+    "lucide-react": "^1.31.0",
+    "postcss": "^8.5.26",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
-    "vite": "^8.2.0",
+    "vite": "^8.2.1",
     "vitest": "^4.1.10",
-    "wrangler": "^4.116.0"
+    "wrangler": "^4.123.0"
   }
 }
